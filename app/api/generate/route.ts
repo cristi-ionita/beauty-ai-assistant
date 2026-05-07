@@ -10,11 +10,16 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const { businessType, topic, language = "Romanian" } = body
+    const {
+      businessType,
+      topic,
+      language = "Romanian",
+      userId,
+    } = body;
 
-    if (!businessType || !topic) {
+    if (!businessType || !topic || !userId) {
       return NextResponse.json(
-        { error: "Missing businessType or topic" },
+        { error: "Missing businessType, topic or userId" },
         { status: 400 }
       );
     }
@@ -37,7 +42,7 @@ Strict rules:
 - Write ONLY in ${language}.
 - Write ONLY for ${businessType}.
 - Use correct native grammar.
-- If language is Romanian, use natural Romanian from Romania. Example: say "o tunsoare modernă", never "un tunsoare modern".
+- If language is Romanian, use natural Romanian from Romania.
 - Do NOT mention unrelated services.
 - Avoid repetitive phrases.
 - Avoid fake marketing language.
@@ -64,6 +69,7 @@ JSON format:
     const posts = JSON.parse(text);
 
     const rows = posts.map((post: any) => ({
+      user_id: userId,
       business_type: businessType,
       language,
       topic,

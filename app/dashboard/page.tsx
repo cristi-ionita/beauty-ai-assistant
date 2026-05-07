@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 type GeneratedPost = {
   caption: string;
@@ -15,12 +16,39 @@ export default function DashboardPage() {
 
   const [posts, setPosts] = useState<GeneratedPost[]>([]);
   const [loading, setLoading] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    async function checkUser() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        window.location.href = "/login";
+        return;
+      }
+
+      setCheckingAuth(false);
+    }
+
+    checkUser();
+  }, []);
 
   async function generatePosts() {
     if (!topic.trim()) return;
 
     try {
       setLoading(true);
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        window.location.href = "/login";
+        return;
+      }
 
       const response = await fetch("/api/generate", {
         method: "POST",
@@ -31,13 +59,14 @@ export default function DashboardPage() {
           businessType,
           topic,
           language,
+          userId: user.id,
         }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        alert("AI generation failed");
+        alert(data.error || "AI generation failed");
         return;
       }
 
@@ -51,39 +80,57 @@ export default function DashboardPage() {
   }
 
   function copyPost(post: GeneratedPost) {
-    const text = `
-${post.caption}
-
-${post.hashtags}
-
-${post.cta}
-`;
-
+    const text = `${post.caption}\n\n${post.hashtags}\n\n${post.cta}`;
     navigator.clipboard.writeText(text);
+  }
+
+  async function logout() {
+    await supabase.auth.signOut();
+    window.location.href = "/login";
+  }
+
+  if (checkingAuth) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-zinc-950 text-white">
+        <p className="text-zinc-400">Checking authentication...</p>
+      </main>
+    );
   }
 
   return (
     <main className="min-h-screen bg-zinc-950 text-white">
       <div className="mx-auto max-w-6xl px-6 py-16">
-        <div className="mb-10">
-          <h1 className="text-4xl font-bold">
-            Content Generator
-          </h1>
+        <div className="mb-10 flex items-center justify-between gap-6">
+          <div>
+            <h1 className="text-4xl font-bold">Content Generator</h1>
 
-          <p className="mt-3 text-zinc-400">
-            Generate social media content for beauty businesses.
-          </p>
+            <p className="mt-3 text-zinc-400">
+              Generate social media content for beauty businesses.
+            </p>
+          </div>
+
+          <div className="flex gap-3">
+            <a
+              href="/history"
+              className="rounded-xl border border-zinc-700 px-5 py-3 text-sm hover:bg-zinc-900"
+            >
+              History
+            </a>
+
+            <button
+              onClick={logout}
+              className="rounded-xl border border-zinc-700 px-5 py-3 text-sm hover:bg-zinc-900"
+            >
+              Logout
+            </button>
+          </div>
         </div>
 
         <div className="grid gap-8 lg:grid-cols-[400px_1fr]">
-          {/* LEFT PANEL */}
           <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
-            <h2 className="mb-6 text-2xl font-semibold">
-              Generate content
-            </h2>
+            <h2 className="mb-6 text-2xl font-semibold">Generate content</h2>
 
             <div className="space-y-5">
-              {/* BUSINESS TYPE */}
               <div>
                 <label className="mb-2 block text-sm text-zinc-400">
                   Business Type
@@ -102,7 +149,6 @@ ${post.cta}
                 </select>
               </div>
 
-              {/* LANGUAGE */}
               <div>
                 <label className="mb-2 block text-sm text-zinc-400">
                   Language
@@ -119,7 +165,6 @@ ${post.cta}
                 </select>
               </div>
 
-              {/* TOPIC */}
               <div>
                 <label className="mb-2 block text-sm text-zinc-400">
                   Topic / Promotion
@@ -133,7 +178,6 @@ ${post.cta}
                 />
               </div>
 
-              {/* BUTTON */}
               <button
                 onClick={generatePosts}
                 disabled={loading}
@@ -144,7 +188,6 @@ ${post.cta}
             </div>
           </div>
 
-          {/* RIGHT PANEL */}
           <div className="space-y-6">
             {posts.length === 0 && (
               <div className="rounded-3xl border border-dashed border-zinc-800 bg-zinc-900 p-10 text-center text-zinc-500">
@@ -172,33 +215,20 @@ ${post.cta}
 
                 <div className="space-y-5">
                   <div>
-                    <p className="mb-2 text-sm text-zinc-500">
-                      Caption
-                    </p>
-
+                    <p className="mb-2 text-sm text-zinc-500">Caption</p>
                     <p className="whitespace-pre-wrap leading-8 text-zinc-300">
                       {post.caption}
                     </p>
                   </div>
 
                   <div>
-                    <p className="mb-2 text-sm text-zinc-500">
-                      Hashtags
-                    </p>
-
-                    <p className="text-pink-300">
-                      {post.hashtags}
-                    </p>
+                    <p className="mb-2 text-sm text-zinc-500">Hashtags</p>
+                    <p className="text-pink-300">{post.hashtags}</p>
                   </div>
 
                   <div>
-                    <p className="mb-2 text-sm text-zinc-500">
-                      CTA
-                    </p>
-
-                    <p className="text-zinc-300">
-                      {post.cta}
-                    </p>
+                    <p className="mb-2 text-sm text-zinc-500">CTA</p>
+                    <p className="text-zinc-300">{post.cta}</p>
                   </div>
                 </div>
               </div>
