@@ -17,6 +17,7 @@ export default function DashboardPage() {
   const [posts, setPosts] = useState<GeneratedPost[]>([]);
   const [loading, setLoading] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
+  const [creditsLeft, setCreditsLeft] = useState<number | null>(null);
 
   useEffect(() => {
     async function checkUser() {
@@ -27,6 +28,16 @@ export default function DashboardPage() {
       if (!user) {
         window.location.href = "/login";
         return;
+      }
+
+      const { data: creditData } = await supabase
+        .from("user_credits")
+        .select("credits")
+        .eq("user_id", user.id)
+        .single();
+
+      if (creditData) {
+        setCreditsLeft(creditData.credits);
       }
 
       setCheckingAuth(false);
@@ -71,6 +82,7 @@ export default function DashboardPage() {
       }
 
       setPosts(data.result);
+      setCreditsLeft(data.creditsLeft);
     } catch (error) {
       console.error(error);
       alert("Something went wrong");
@@ -106,6 +118,10 @@ export default function DashboardPage() {
 
             <p className="mt-3 text-zinc-400">
               Generate social media content for beauty businesses.
+            </p>
+
+            <p className="mt-2 text-sm text-pink-300">
+              Credits left: {creditsLeft ?? "..."}
             </p>
           </div>
 
@@ -180,11 +196,21 @@ export default function DashboardPage() {
 
               <button
                 onClick={generatePosts}
-                disabled={loading}
+                disabled={loading || creditsLeft === 0}
                 className="w-full rounded-xl bg-pink-500 py-4 font-semibold hover:bg-pink-400 disabled:opacity-50"
               >
-                {loading ? "Generating..." : "Generate Posts"}
+                {loading
+                  ? "Generating..."
+                  : creditsLeft === 0
+                    ? "No credits left"
+                    : "Generate Posts"}
               </button>
+
+              {creditsLeft === 0 && (
+                <p className="text-sm text-zinc-400">
+                  You used all free credits. Upgrade option comes next.
+                </p>
+              )}
             </div>
           </div>
 

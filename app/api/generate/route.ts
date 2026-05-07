@@ -19,8 +19,46 @@ export async function POST(req: Request) {
 
     if (!businessType || !topic || !userId) {
       return NextResponse.json(
-        { error: "Missing businessType, topic or userId" },
-        { status: 400 }
+        {
+          error: "Missing required fields",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    // CHECK USER CREDITS
+    let { data: creditData } = await supabase
+      .from("user_credits")
+      .select("*")
+      .eq("user_id", userId)
+      .single();
+
+    // CREATE INITIAL CREDITS
+    if (!creditData) {
+      const { data: newCredits } = await supabase
+        .from("user_credits")
+        .insert({
+          user_id: userId,
+          credits: 10,
+          plan: "free",
+        })
+        .select()
+        .single();
+
+      creditData = newCredits;
+    }
+
+    // NO CREDITS LEFT
+    if (!creditData || creditData.credits <= 0) {
+      return NextResponse.json(
+        {
+          error: "No credits left",
+        },
+        {
+          status: 403,
+        }
       );
     }
 
@@ -62,12 +100,19 @@ JSON format:
     const response = await client.chat.completions.create({
       model: "gpt-4.1-mini",
       temperature: 0.9,
-      messages: [{ role: "user", content: prompt }],
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
     });
 
     const text = response.choices[0].message.content || "[]";
+
     const posts = JSON.parse(text);
 
+    // SAVE POSTS
     const rows = posts.map((post: any) => ({
       user_id: userId,
       business_type: businessType,
@@ -78,23 +123,30 @@ JSON format:
       cta: post.cta,
     }));
 
-    const { error } = await supabase.from("generated_posts").insert(rows);
+    await supabase.from("generated_posts").insert(rows);
 
-    if (error) {
-      console.error(error);
-      return NextResponse.json(
-        { error: "Failed to save posts" },
-        { status: 500 }
-      );
-    }
+    // DECREASE CREDITS
+    await supabase
+      .from("user_credits")
+      .update({
+        credits: creditData.credits - 1,
+      })
+      .eq("user_id", userId);
 
-    return NextResponse.json({ result: posts });
+    return NextResponse.json({
+      result: posts,
+      creditsLeft: creditData.credits - 1,
+    });
   } catch (error) {
     console.error(error);
 
     return NextResponse.json(
-      { error: "Something went wrong" },
-      { status: 500 }
+      {
+        error: "Something went wrong",
+      },
+      {
+        status: 500,
+      }
     );
   }
 }
