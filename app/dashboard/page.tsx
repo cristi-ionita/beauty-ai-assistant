@@ -298,13 +298,23 @@ export default function DashboardPage() {
                   Language
                 </label>
 
-                <input
-                  type="text"
+                <select
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
-                  placeholder="Example: English, Spanish, French..."
                   className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
-                />
+                >
+                  <option>English</option>
+                  <option>Spanish</option>
+                  <option>French</option>
+                  <option>German</option>
+                  <option>Italian</option>
+                  <option>Portuguese</option>
+                  <option>Romanian</option>
+                  <option>Dutch</option>
+                  <option>Polish</option>
+                  <option>Turkish</option>
+                  <option>Arabic</option>
+                </select>
               </div>
 
               <div>
@@ -400,7 +410,7 @@ export default function DashboardPage() {
                 <textarea
                   value={topic}
                   onChange={(e) => setTopic(e.target.value)}
-                  placeholder="Example: Summer nails promotion, new haircut service, discount for first-time clients..."
+                  placeholder="Example: Summer nails promotion, new haircut service..."
                   className="min-h-[130px] w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
                 />
               </div>
