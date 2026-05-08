@@ -10,7 +10,16 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const { businessType, topic, language = "Romanian", userId } = body;
+    const {
+      businessType,
+      topic,
+      language = "Romanian",
+      platform = "Instagram",
+      tone = "Friendly",
+      goal = "Get bookings",
+      postCount = 3,
+      userId,
+    } = body;
 
     if (!businessType || !topic || !userId) {
       return NextResponse.json(
@@ -48,30 +57,49 @@ export async function POST(req: Request) {
       );
     }
 
+    const safePostCount = isPro
+      ? Math.min(Number(postCount) || 3, 10)
+      : Math.min(Number(postCount) || 3, 3);
+
     const prompt = `
-You are an expert Instagram copywriter for beauty and grooming businesses.
+You are an expert social media strategist and copywriter for beauty, grooming, and wellness businesses.
 
 Business type:
 ${businessType}
 
-Content topic:
+Content topic / promotion:
 ${topic}
+
+Platform:
+${platform}
+
+Goal:
+${goal}
+
+Tone:
+${tone}
 
 Language:
 ${language}
 
-Generate exactly 3 Instagram posts.
+Generate exactly ${safePostCount} social media posts.
 
 Strict rules:
 - Write ONLY in ${language}.
 - Write ONLY for ${businessType}.
-- Use correct native grammar.
-- If language is Romanian, use natural Romanian from Romania.
-- Do NOT mention unrelated services.
+- Optimize the content for ${platform}.
+- Match the tone: ${tone}.
+- Match the goal: ${goal}.
+- If the language is Romanian, use natural Romanian from Romania.
+- Do not mention unrelated services.
 - Avoid repetitive phrases.
 - Avoid fake marketing language.
-- Avoid too many emojis.
+- Avoid excessive emojis.
+- Make every post meaningfully different.
+- Include a strong CTA for each post.
 - Return ONLY valid JSON.
+- Do not include markdown.
+- Do not include explanations.
 
 JSON format:
 [
@@ -85,14 +113,48 @@ JSON format:
 
     const response = await client.chat.completions.create({
       model: "gpt-4.1-mini",
-      temperature: 0.9,
+      temperature: 0.85,
       messages: [{ role: "user", content: prompt }],
     });
 
     const text = response.choices[0].message.content || "[]";
-    const posts = JSON.parse(text);
 
-    const rows = posts.map((post: any) => ({
+    let posts;
+
+    try {
+      posts = JSON.parse(text);
+    } catch {
+      return NextResponse.json(
+        { error: "AI returned invalid format. Please try again." },
+        { status: 500 }
+      );
+    }
+
+    if (!Array.isArray(posts)) {
+      return NextResponse.json(
+        { error: "AI returned invalid post structure." },
+        { status: 500 }
+      );
+    }
+
+    const validPosts = posts
+      .filter(
+        (post) =>
+          post &&
+          typeof post.caption === "string" &&
+          typeof post.hashtags === "string" &&
+          typeof post.cta === "string"
+      )
+      .slice(0, safePostCount);
+
+    if (validPosts.length === 0) {
+      return NextResponse.json(
+        { error: "AI did not generate valid posts. Please try again." },
+        { status: 500 }
+      );
+    }
+
+    const rows = validPosts.map((post: any) => ({
       user_id: userId,
       business_type: businessType,
       language,
@@ -118,8 +180,10 @@ JSON format:
     }
 
     return NextResponse.json({
-      result: posts,
+      result: validPosts,
       creditsLeft: isPro ? 999999 : creditsLeft,
+      plan: isPro ? "pro" : "free",
+      maxPostsAllowed: isPro ? 10 : 3,
     });
   } catch (error) {
     console.error(error);

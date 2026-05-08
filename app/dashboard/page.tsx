@@ -2,12 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-
-type GeneratedPost = {
-  caption: string;
-  hashtags: string;
-  cta: string;
-};
+import type { GeneratedPost } from "@/types/dashboard";
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import GeneratorForm from "@/components/dashboard/GeneratorForm";
+import ResultsPanel from "@/components/dashboard/ResultsPanel";
 
 export default function DashboardPage() {
   const [businessType, setBusinessType] = useState("Barbershop");
@@ -20,6 +18,7 @@ export default function DashboardPage() {
 
   const [posts, setPosts] = useState<GeneratedPost[]>([]);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+
   const [loading, setLoading] = useState(false);
   const [imageLoading, setImageLoading] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
@@ -239,22 +238,6 @@ modern beauty industry aesthetic, premium lighting, clean composition, elegant c
     }
   }
 
-  function copyPost(post: GeneratedPost) {
-    const text = `${post.caption}\n\n${post.hashtags}\n\n${post.cta}`;
-    navigator.clipboard.writeText(text);
-  }
-
-  function copyAllPosts() {
-    const text = posts
-      .map(
-        (post, index) =>
-          `POST ${index + 1}\n\n${post.caption}\n\n${post.hashtags}\n\n${post.cta}`
-      )
-      .join("\n\n-------------------\n\n");
-
-    navigator.clipboard.writeText(text);
-  }
-
   async function logout() {
     await supabase.auth.signOut();
     window.location.href = "/login";
@@ -271,319 +254,39 @@ modern beauty industry aesthetic, premium lighting, clean composition, elegant c
   return (
     <main className="min-h-screen bg-zinc-950 text-white">
       <div className="mx-auto max-w-6xl px-6 py-16">
-        <div className="mb-10 flex items-center justify-between gap-6">
-          <div>
-            <h1 className="text-4xl font-bold">Content Generator</h1>
-
-            <p className="mt-3 text-zinc-400">
-              Generate social media content and AI images for beauty businesses.
-            </p>
-
-            <p className="mt-2 text-sm text-pink-300">
-              {isPro ? "Plan: Pro" : `Credits left: ${creditsLeft ?? "..."}`}
-            </p>
-
-            {isPro ? (
-              <button
-                onClick={manageSubscription}
-                className="mt-4 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-zinc-200"
-              >
-                Manage Subscription
-              </button>
-            ) : (
-              <button
-                onClick={upgradeToPro}
-                className="mt-4 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-zinc-200"
-              >
-                Upgrade to Pro
-              </button>
-            )}
-          </div>
-
-          <div className="flex gap-3">
-            <a
-              href="/history"
-              className="rounded-xl border border-zinc-700 px-5 py-3 text-sm hover:bg-zinc-900"
-            >
-              History
-            </a>
-
-            <button
-              onClick={logout}
-              className="rounded-xl border border-zinc-700 px-5 py-3 text-sm hover:bg-zinc-900"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
+        <DashboardHeader
+          isPro={isPro}
+          creditsLeft={creditsLeft}
+          onUpgrade={upgradeToPro}
+          onManageSubscription={manageSubscription}
+          onLogout={logout}
+        />
 
         <div className="grid gap-8 lg:grid-cols-[420px_1fr]">
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
-            <h2 className="mb-6 text-2xl font-semibold">Generate content</h2>
+          <GeneratorForm
+            businessType={businessType}
+            setBusinessType={setBusinessType}
+            language={language}
+            setLanguage={setLanguage}
+            platform={platform}
+            setPlatform={setPlatform}
+            tone={tone}
+            setTone={setTone}
+            goal={goal}
+            setGoal={setGoal}
+            postCount={postCount}
+            setPostCount={setPostCount}
+            topic={topic}
+            setTopic={setTopic}
+            isPro={isPro}
+            creditsLeft={creditsLeft}
+            loading={loading}
+            imageLoading={imageLoading}
+            onGeneratePosts={generatePosts}
+            onGenerateImage={generateImage}
+          />
 
-            <div className="space-y-5">
-              <div>
-                <label className="mb-2 block text-sm text-zinc-400">
-                  Business Type
-                </label>
-
-                <select
-                  value={businessType}
-                  onChange={(e) => setBusinessType(e.target.value)}
-                  className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
-                >
-                  <option>Barbershop</option>
-                  <option>Nail Salon</option>
-                  <option>Lash Studio</option>
-                  <option>Hair Salon</option>
-                  <option>Beauty Salon</option>
-                  <option>Spa</option>
-                  <option>Massage Studio</option>
-                  <option>Makeup Artist</option>
-                  <option>Med Spa</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm text-zinc-400">
-                  Language
-                </label>
-
-                <select
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
-                  className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
-                >
-                  <option>English</option>
-                  <option>Spanish</option>
-                  <option>French</option>
-                  <option>German</option>
-                  <option>Italian</option>
-                  <option>Portuguese</option>
-                  <option>Romanian</option>
-                  <option>Dutch</option>
-                  <option>Polish</option>
-                  <option>Turkish</option>
-                  <option>Arabic</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm text-zinc-400">
-                  Platform
-                </label>
-
-                <select
-                  value={platform}
-                  onChange={(e) => setPlatform(e.target.value)}
-                  className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
-                >
-                  <option>Instagram</option>
-                  <option>Facebook</option>
-                  <option>TikTok</option>
-                  <option>LinkedIn</option>
-                  <option>Google Business Profile</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm text-zinc-400">
-                  Tone
-                </label>
-
-                <select
-                  value={tone}
-                  onChange={(e) => setTone(e.target.value)}
-                  className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
-                >
-                  <option>Friendly</option>
-                  <option>Professional</option>
-                  <option>Luxury</option>
-                  <option>Bold</option>
-                  <option>Funny</option>
-                  <option>Elegant</option>
-                  <option>Warm</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm text-zinc-400">
-                  Goal
-                </label>
-
-                <select
-                  value={goal}
-                  onChange={(e) => setGoal(e.target.value)}
-                  className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
-                >
-                  <option>Get bookings</option>
-                  <option>Promote offer</option>
-                  <option>Educate clients</option>
-                  <option>Announce service</option>
-                  <option>Increase engagement</option>
-                  <option>Sell gift cards</option>
-                  <option>Win back old clients</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm text-zinc-400">
-                  Number of posts
-                </label>
-
-                <select
-                  value={postCount}
-                  onChange={(e) => setPostCount(Number(e.target.value))}
-                  className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
-                >
-                  <option value={3}>3 Posts</option>
-
-                  {isPro && (
-                    <>
-                      <option value={5}>5 Posts</option>
-                      <option value={10}>10 Posts</option>
-                    </>
-                  )}
-                </select>
-
-                {!isPro && (
-                  <p className="mt-2 text-xs text-zinc-500">
-                    Upgrade to Pro for 5 and 10 post generations.
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm text-zinc-400">
-                  Topic / Promotion
-                </label>
-
-                <textarea
-                  value={topic}
-                  onChange={(e) => setTopic(e.target.value)}
-                  placeholder="Example: Summer nails promotion, new haircut service..."
-                  className="min-h-[130px] w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
-                />
-              </div>
-
-              <button
-                onClick={generatePosts}
-                disabled={loading || creditsLeft === 0}
-                className="w-full rounded-xl bg-pink-500 py-4 font-semibold hover:bg-pink-400 disabled:opacity-50"
-              >
-                {loading
-                  ? "Generating..."
-                  : creditsLeft === 0
-                    ? "No credits left"
-                    : "Generate Posts"}
-              </button>
-
-              <button
-                onClick={generateImage}
-                disabled={imageLoading || !topic.trim()}
-                className="w-full rounded-xl border border-zinc-700 py-4 font-semibold hover:bg-zinc-800 disabled:opacity-50"
-              >
-                {imageLoading ? "Generating Image..." : "Generate AI Image"}
-              </button>
-
-              {!isPro && (
-                <p className="text-xs text-zinc-500">
-                  AI images may use additional API cost. Consider making image
-                  generation Pro-only before launch.
-                </p>
-              )}
-
-              {creditsLeft === 0 && !isPro && (
-                <p className="text-sm text-zinc-400">
-                  You used all free credits. Upgrade to Pro for unlimited
-                  generations.
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            {posts.length > 0 && (
-              <button
-                onClick={copyAllPosts}
-                className="rounded-xl border border-zinc-700 px-5 py-3 text-sm hover:bg-zinc-900"
-              >
-                Copy All Posts
-              </button>
-            )}
-
-            {generatedImage && (
-              <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
-                <div className="mb-4 flex items-center justify-between gap-3">
-                  <h3 className="text-xl font-semibold text-pink-300">
-                    AI Generated Image
-                  </h3>
-
-                  <a
-                    href={generatedImage}
-                    download="beauty-ai-image.png"
-                    className="rounded-lg border border-zinc-700 px-4 py-2 text-sm hover:bg-zinc-800"
-                  >
-                    Download
-                  </a>
-                </div>
-
-                <img
-                  src={generatedImage}
-                  alt="AI generated beauty marketing image"
-                  className="w-full rounded-2xl"
-                />
-              </div>
-            )}
-
-            {posts.length === 0 && !generatedImage && (
-              <div className="rounded-3xl border border-dashed border-zinc-800 bg-zinc-900 p-10 text-center text-zinc-500">
-                Generated posts and images will appear here.
-              </div>
-            )}
-
-            {posts.map((post, index) => (
-              <div
-                key={index}
-                className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6"
-              >
-                <div className="mb-4 flex items-center justify-between">
-                  <h3 className="text-xl font-semibold text-pink-300">
-                    Post #{index + 1}
-                  </h3>
-
-                  <button
-                    onClick={() => copyPost(post)}
-                    className="rounded-lg border border-zinc-700 px-4 py-2 text-sm hover:bg-zinc-800"
-                  >
-                    Copy
-                  </button>
-                </div>
-
-                <div className="space-y-5">
-                  <div>
-                    <p className="mb-2 text-sm text-zinc-500">Caption</p>
-
-                    <p className="whitespace-pre-wrap leading-8 text-zinc-300">
-                      {post.caption}
-                    </p>
-                  </div>
-
-                  <div>
-                    <p className="mb-2 text-sm text-zinc-500">Hashtags</p>
-
-                    <p className="text-pink-300">{post.hashtags}</p>
-                  </div>
-
-                  <div>
-                    <p className="mb-2 text-sm text-zinc-500">CTA</p>
-
-                    <p className="text-zinc-300">{post.cta}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <ResultsPanel posts={posts} generatedImage={generatedImage} />
         </div>
       </div>
     </main>
