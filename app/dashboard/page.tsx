@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import type { GeneratedPost } from "@/types/dashboard";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
@@ -48,6 +49,7 @@ export default function DashboardPage() {
 
       if (error) {
         console.error("Failed to load user credits:", error);
+        toast.error("Could not load your account data");
       }
 
       if (creditData) {
@@ -63,7 +65,10 @@ export default function DashboardPage() {
   }, []);
 
   async function generatePosts() {
-    if (!topic.trim()) return;
+    if (!topic.trim()) {
+      toast.error("Please enter a topic or promotion first");
+      return;
+    }
 
     try {
       setLoading(true);
@@ -97,11 +102,12 @@ export default function DashboardPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        alert(data.error || "AI generation failed");
+        toast.error(data.error || "AI generation failed");
         return;
       }
 
       setPosts(data.result);
+      toast.success("Posts generated successfully");
 
       if (data.creditsLeft !== undefined) {
         setCreditsLeft(data.creditsLeft);
@@ -112,14 +118,17 @@ export default function DashboardPage() {
       }
     } catch (error) {
       console.error(error);
-      alert("Something went wrong");
+      toast.error("Something went wrong");
     } finally {
       setLoading(false);
     }
   }
 
   async function generateImage() {
-    if (!topic.trim()) return;
+    if (!topic.trim()) {
+      toast.error("Please enter a topic before generating an image");
+      return;
+    }
 
     try {
       setImageLoading(true);
@@ -154,14 +163,15 @@ modern beauty industry aesthetic, premium lighting, clean composition, elegant c
       const data = await response.json();
 
       if (!response.ok) {
-        alert(data.error || "Image generation failed");
+        toast.error(data.error || "Image generation failed");
         return;
       }
 
       setGeneratedImage(data.image);
+      toast.success("Image generated successfully");
     } catch (error) {
       console.error(error);
-      alert("Image generation failed");
+      toast.error("Image generation failed");
     } finally {
       setImageLoading(false);
     }
@@ -194,11 +204,11 @@ modern beauty industry aesthetic, premium lighting, clean composition, elegant c
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert(data.error || "Checkout failed");
+        toast.error(data.error || "Checkout failed");
       }
     } catch (error) {
       console.error(error);
-      alert("Stripe checkout failed");
+      toast.error("Stripe checkout failed");
     }
   }
 
@@ -230,11 +240,11 @@ modern beauty industry aesthetic, premium lighting, clean composition, elegant c
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert(data.error || "Portal failed");
+        toast.error(data.error || "Portal failed");
       }
     } catch (error) {
       console.error(error);
-      alert("Stripe portal failed");
+      toast.error("Stripe portal failed");
     }
   }
 
