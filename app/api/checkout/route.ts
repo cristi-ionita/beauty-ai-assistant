@@ -3,16 +3,34 @@ import { NextResponse } from "next/server";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
+type PlanType = "normal" | "pro";
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const { userId, email } = body;
+    const { userId, email, planType = "normal" } = body as {
+      userId?: string;
+      email?: string;
+      planType?: PlanType;
+    };
 
     if (!userId || !email) {
       return NextResponse.json(
         { error: "Missing userId or email" },
         { status: 400 }
+      );
+    }
+
+    const priceId =
+      planType === "pro"
+        ? process.env.STRIPE_PRO_PRICE_ID
+        : process.env.STRIPE_NORMAL_PRICE_ID;
+
+    if (!priceId) {
+      return NextResponse.json(
+        { error: "Missing Stripe price configuration" },
+        { status: 500 }
       );
     }
 
@@ -29,16 +47,18 @@ export async function POST(req: Request) {
       customer: customer.id,
       line_items: [
         {
-          price: process.env.STRIPE_PRICE_ID!,
+          price: priceId,
           quantity: 1,
         },
       ],
       metadata: {
         userId,
+        planType,
       },
       subscription_data: {
         metadata: {
           userId,
+          planType,
         },
       },
       success_url:

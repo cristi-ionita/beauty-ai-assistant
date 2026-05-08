@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     const {
       businessType,
       topic,
-      language = "Romanian",
+      language = "English",
       platform = "Instagram",
       tone = "Friendly",
       goal = "Get bookings",
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
       .single();
 
     if (!creditData) {
-      const { data: newCredits } = await supabase
+      const { data: newCredits, error: insertError } = await supabase
         .from("user_credits")
         .insert({
           user_id: userId,
@@ -46,19 +46,29 @@ export async function POST(req: Request) {
         .select()
         .single();
 
+      if (insertError || !newCredits) {
+        console.error("Failed to create free credits:", insertError);
+
+        return NextResponse.json(
+          { error: "Failed to create user credits" },
+          { status: 500 }
+        );
+      }
+
       creditData = newCredits;
     }
 
-    const isPro = creditData?.plan === "pro";
+    const plan = creditData.plan || "free";
+    const isPaid = plan === "normal" || plan === "pro";
 
-    if (!isPro && (!creditData || creditData.credits <= 0)) {
+    if (!isPaid && creditData.credits <= 0) {
       return NextResponse.json(
         { error: "No credits left" },
         { status: 403 }
       );
     }
 
-    const safePostCount = isPro
+    const safePostCount = isPaid
       ? Math.min(Number(postCount) || 3, 10)
       : Math.min(Number(postCount) || 3, 3);
 
@@ -167,9 +177,9 @@ JSON format:
 
     await supabase.from("generated_posts").insert(rows);
 
-    let creditsLeft = creditData?.credits ?? 0;
+    let creditsLeft = creditData.credits;
 
-    if (!isPro) {
+    if (!isPaid) {
       creditsLeft = creditData.credits - 1;
 
       await supabase
@@ -182,9 +192,10 @@ JSON format:
 
     return NextResponse.json({
       result: validPosts,
-      creditsLeft: isPro ? 999999 : creditsLeft,
-      plan: isPro ? "pro" : "free",
-      maxPostsAllowed: isPro ? 10 : 3,
+      creditsLeft,
+      imageCreditsLeft: creditData.image_credits,
+      plan,
+      maxPostsAllowed: isPaid ? 10 : 3,
     });
   } catch (error) {
     console.error(error);

@@ -4,6 +4,22 @@ import { supabase } from "@/lib/supabase";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
+function getPlanFromPrice(priceId?: string | null) {
+  if (priceId === process.env.STRIPE_PRO_PRICE_ID) {
+    return {
+      plan: "pro",
+      credits: 999999,
+      imageCredits: 150,
+    };
+  }
+
+  return {
+    plan: "normal",
+    credits: 999999,
+    imageCredits: 30,
+  };
+}
+
 export async function POST(req: Request) {
   const body = await req.text();
   const signature = req.headers.get("stripe-signature");
@@ -38,8 +54,20 @@ export async function POST(req: Request) {
     const userId = session.metadata?.userId;
     const customerId = session.customer as string;
 
+    const lineItems = await stripe.checkout.sessions.listLineItems(
+      session.id,
+      {
+        limit: 1,
+      }
+    );
+
+    const priceId = lineItems.data[0]?.price?.id;
+    const selectedPlan = getPlanFromPrice(priceId);
+
     console.log("Checkout completed for userId:", userId);
     console.log("Stripe customer:", customerId);
+    console.log("Stripe price:", priceId);
+    console.log("Selected plan:", selectedPlan.plan);
 
     if (!userId) {
       console.error("No userId found in Stripe metadata");
@@ -51,8 +79,9 @@ export async function POST(req: Request) {
       .upsert(
         {
           user_id: userId,
-          plan: "pro",
-          credits: 999999,
+          plan: selectedPlan.plan,
+          credits: selectedPlan.credits,
+          image_credits: selectedPlan.imageCredits,
           stripe_customer_id: customerId,
         },
         {
@@ -64,7 +93,7 @@ export async function POST(req: Request) {
     if (error) {
       console.error("Supabase update failed:", error);
     } else {
-      console.log("User upgraded to Pro:", data);
+      console.log("User upgraded:", data);
     }
   }
 
@@ -79,6 +108,7 @@ export async function POST(req: Request) {
       .update({
         plan: "free",
         credits: 10,
+        image_credits: 1,
       })
       .eq("stripe_customer_id", customerId)
       .select();
