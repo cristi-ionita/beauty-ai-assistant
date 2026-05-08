@@ -146,8 +146,12 @@ export default function DashboardPage() {
 
   async function manageSubscription() {
     try {
-      if (!stripeCustomerId) {
-        alert("Stripe customer ID missing. Please refresh the page.");
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user || !user.email) {
+        window.location.href = "/login";
         return;
       }
 
@@ -158,6 +162,8 @@ export default function DashboardPage() {
         },
         body: JSON.stringify({
           customerId: stripeCustomerId,
+          userId: user.id,
+          email: user.email,
         }),
       });
 
