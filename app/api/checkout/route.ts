@@ -29,8 +29,10 @@ export async function POST(req: Request) {
       metadata: {
         userId,
       },
-      success_url: "http://localhost:3001/dashboard?success=true",
-      cancel_url: "http://localhost:3001/dashboard?canceled=true",
+      success_url:
+  "https://beauty-ai-assistant-kappa.vercel.app/dashboard?success=true",
+      cancel_url:
+  "https://beauty-ai-assistant-kappa.vercel.app/dashboard?canceled=true",
     });
 
     return NextResponse.json({
