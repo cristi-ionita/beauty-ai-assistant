@@ -19,13 +19,12 @@ export default function DashboardHeader({
 }: DashboardHeaderProps) {
   const isPro = plan === "pro";
   const isNormal = plan === "normal";
+  const isPaid = isNormal || isPro;
 
   return (
     <div className="mb-10 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
       <div>
-        <h1 className="text-4xl font-bold">
-          Content Generator
-        </h1>
+        <h1 className="text-4xl font-bold">Content Generator</h1>
 
         <p className="mt-3 text-zinc-400">
           Generate social media content and AI images for beauty businesses.
@@ -33,9 +32,7 @@ export default function DashboardHeader({
 
         <div className="mt-5 flex flex-wrap gap-3">
           <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3">
-            <p className="text-xs text-zinc-500">
-              Current Plan
-            </p>
+            <p className="text-xs text-zinc-500">Current Plan</p>
 
             <p className="mt-1 font-semibold capitalize text-pink-300">
               {plan || "free"}
@@ -43,19 +40,15 @@ export default function DashboardHeader({
           </div>
 
           <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3">
-            <p className="text-xs text-zinc-500">
-              Text Credits
-            </p>
+            <p className="text-xs text-zinc-500">Text Credits</p>
 
             <p className="mt-1 font-semibold">
-              {creditsLeft ?? "..."}
+              {isPaid ? "Unlimited" : creditsLeft ?? "..."}
             </p>
           </div>
 
           <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3">
-            <p className="text-xs text-zinc-500">
-              Image Credits
-            </p>
+            <p className="text-xs text-zinc-500">Image Credits</p>
 
             <p className="mt-1 font-semibold">
               {imageCreditsLeft ?? "..."}
@@ -63,7 +56,7 @@ export default function DashboardHeader({
           </div>
         </div>
 
-        {!isNormal && !isPro && (
+        {!isPaid && (
           <div className="mt-5 flex flex-wrap gap-3">
             <button
               onClick={onUpgradeNormal}
@@ -81,7 +74,7 @@ export default function DashboardHeader({
           </div>
         )}
 
-        {(isNormal || isPro) && (
+        {isPaid && (
           <button
             onClick={onManageSubscription}
             className="mt-5 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-zinc-200"

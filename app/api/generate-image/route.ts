@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { rateLimit } from "@/lib/rate-limit";
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -16,6 +17,19 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { error: "Missing prompt or userId" },
         { status: 400 }
+      );
+    }
+
+    const limit = rateLimit({
+      key: `image:${userId}`,
+      limit: 5,
+      windowMs: 60 * 60 * 1000,
+    });
+
+    if (!limit.success) {
+      return NextResponse.json(
+        { error: "Too many image requests. Please try again later." },
+        { status: 429 }
       );
     }
 
