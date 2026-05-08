@@ -19,7 +19,9 @@ export default function DashboardPage() {
   const [postCount, setPostCount] = useState(3);
 
   const [posts, setPosts] = useState<GeneratedPost[]>([]);
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [imageLoading, setImageLoading] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
 
   const [creditsLeft, setCreditsLeft] = useState<number | null>(null);
@@ -114,6 +116,55 @@ export default function DashboardPage() {
       alert("Something went wrong");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function generateImage() {
+    if (!topic.trim()) return;
+
+    try {
+      setImageLoading(true);
+
+      const response = await fetch("/api/generate-image", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: `
+Create a premium square social media marketing image for a ${businessType}.
+
+Topic:
+${topic}
+
+Platform:
+${platform}
+
+Tone:
+${tone}
+
+Goal:
+${goal}
+
+Visual direction:
+modern beauty industry aesthetic, premium lighting, clean composition, elegant colors, professional advertising image, no unreadable text, no distorted faces, high quality, suitable for social media.
+`,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.error || "Image generation failed");
+        return;
+      }
+
+      setGeneratedImage(data.image);
+    } catch (error) {
+      console.error(error);
+      alert("Image generation failed");
+    } finally {
+      setImageLoading(false);
     }
   }
 
@@ -225,7 +276,7 @@ export default function DashboardPage() {
             <h1 className="text-4xl font-bold">Content Generator</h1>
 
             <p className="mt-3 text-zinc-400">
-              Generate social media content for beauty businesses.
+              Generate social media content and AI images for beauty businesses.
             </p>
 
             <p className="mt-2 text-sm text-pink-300">
@@ -427,6 +478,21 @@ export default function DashboardPage() {
                     : "Generate Posts"}
               </button>
 
+              <button
+                onClick={generateImage}
+                disabled={imageLoading || !topic.trim()}
+                className="w-full rounded-xl border border-zinc-700 py-4 font-semibold hover:bg-zinc-800 disabled:opacity-50"
+              >
+                {imageLoading ? "Generating Image..." : "Generate AI Image"}
+              </button>
+
+              {!isPro && (
+                <p className="text-xs text-zinc-500">
+                  AI images may use additional API cost. Consider making image
+                  generation Pro-only before launch.
+                </p>
+              )}
+
               {creditsLeft === 0 && !isPro && (
                 <p className="text-sm text-zinc-400">
                   You used all free credits. Upgrade to Pro for unlimited
@@ -446,9 +512,33 @@ export default function DashboardPage() {
               </button>
             )}
 
-            {posts.length === 0 && (
+            {generatedImage && (
+              <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <h3 className="text-xl font-semibold text-pink-300">
+                    AI Generated Image
+                  </h3>
+
+                  <a
+                    href={generatedImage}
+                    download="beauty-ai-image.png"
+                    className="rounded-lg border border-zinc-700 px-4 py-2 text-sm hover:bg-zinc-800"
+                  >
+                    Download
+                  </a>
+                </div>
+
+                <img
+                  src={generatedImage}
+                  alt="AI generated beauty marketing image"
+                  className="w-full rounded-2xl"
+                />
+              </div>
+            )}
+
+            {posts.length === 0 && !generatedImage && (
               <div className="rounded-3xl border border-dashed border-zinc-800 bg-zinc-900 p-10 text-center text-zinc-500">
-                Generated posts will appear here.
+                Generated posts and images will appear here.
               </div>
             )}
 
