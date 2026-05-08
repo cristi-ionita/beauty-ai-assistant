@@ -32,12 +32,16 @@ export default function DashboardPage() {
 
       const { data: creditData } = await supabase
         .from("user_credits")
-        .select("credits")
+        .select("credits, plan")
         .eq("user_id", user.id)
         .single();
 
       if (creditData) {
-        setCreditsLeft(creditData.credits);
+        if (creditData.plan === "pro") {
+          setCreditsLeft(999999);
+        } else {
+          setCreditsLeft(creditData.credits);
+        }
       }
 
       setCheckingAuth(false);
@@ -82,12 +86,48 @@ export default function DashboardPage() {
       }
 
       setPosts(data.result);
-      setCreditsLeft(data.creditsLeft);
+
+      if (data.creditsLeft !== undefined) {
+        setCreditsLeft(data.creditsLeft);
+      }
     } catch (error) {
       console.error(error);
       alert("Something went wrong");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function upgradeToPro() {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user || !user.email) {
+        window.location.href = "/login";
+        return;
+      }
+
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          email: user.email,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Stripe checkout failed");
     }
   }
 
@@ -114,7 +154,9 @@ export default function DashboardPage() {
       <div className="mx-auto max-w-6xl px-6 py-16">
         <div className="mb-10 flex items-center justify-between gap-6">
           <div>
-            <h1 className="text-4xl font-bold">Content Generator</h1>
+            <h1 className="text-4xl font-bold">
+              Content Generator
+            </h1>
 
             <p className="mt-3 text-zinc-400">
               Generate social media content for beauty businesses.
@@ -123,6 +165,13 @@ export default function DashboardPage() {
             <p className="mt-2 text-sm text-pink-300">
               Credits left: {creditsLeft ?? "..."}
             </p>
+
+            <button
+              onClick={upgradeToPro}
+              className="mt-4 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-zinc-200"
+            >
+              Upgrade to Pro
+            </button>
           </div>
 
           <div className="flex gap-3">
@@ -144,7 +193,9 @@ export default function DashboardPage() {
 
         <div className="grid gap-8 lg:grid-cols-[400px_1fr]">
           <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
-            <h2 className="mb-6 text-2xl font-semibold">Generate content</h2>
+            <h2 className="mb-6 text-2xl font-semibold">
+              Generate content
+            </h2>
 
             <div className="space-y-5">
               <div>
@@ -208,7 +259,7 @@ export default function DashboardPage() {
 
               {creditsLeft === 0 && (
                 <p className="text-sm text-zinc-400">
-                  You used all free credits. Upgrade option comes next.
+                  You used all free credits.
                 </p>
               )}
             </div>
@@ -241,20 +292,33 @@ export default function DashboardPage() {
 
                 <div className="space-y-5">
                   <div>
-                    <p className="mb-2 text-sm text-zinc-500">Caption</p>
+                    <p className="mb-2 text-sm text-zinc-500">
+                      Caption
+                    </p>
+
                     <p className="whitespace-pre-wrap leading-8 text-zinc-300">
                       {post.caption}
                     </p>
                   </div>
 
                   <div>
-                    <p className="mb-2 text-sm text-zinc-500">Hashtags</p>
-                    <p className="text-pink-300">{post.hashtags}</p>
+                    <p className="mb-2 text-sm text-zinc-500">
+                      Hashtags
+                    </p>
+
+                    <p className="text-pink-300">
+                      {post.hashtags}
+                    </p>
                   </div>
 
                   <div>
-                    <p className="mb-2 text-sm text-zinc-500">CTA</p>
-                    <p className="text-zinc-300">{post.cta}</p>
+                    <p className="mb-2 text-sm text-zinc-500">
+                      CTA
+                    </p>
+
+                    <p className="text-zinc-300">
+                      {post.cta}
+                    </p>
                   </div>
                 </div>
               </div>

@@ -10,32 +10,21 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const {
-      businessType,
-      topic,
-      language = "Romanian",
-      userId,
-    } = body;
+    const { businessType, topic, language = "Romanian", userId } = body;
 
     if (!businessType || !topic || !userId) {
       return NextResponse.json(
-        {
-          error: "Missing required fields",
-        },
-        {
-          status: 400,
-        }
+        { error: "Missing required fields" },
+        { status: 400 }
       );
     }
 
-    // CHECK USER CREDITS
     let { data: creditData } = await supabase
       .from("user_credits")
       .select("*")
       .eq("user_id", userId)
       .single();
 
-    // CREATE INITIAL CREDITS
     if (!creditData) {
       const { data: newCredits } = await supabase
         .from("user_credits")
@@ -50,15 +39,12 @@ export async function POST(req: Request) {
       creditData = newCredits;
     }
 
-    // NO CREDITS LEFT
-    if (!creditData || creditData.credits <= 0) {
+    const isPro = creditData?.plan === "pro";
+
+    if (!isPro && (!creditData || creditData.credits <= 0)) {
       return NextResponse.json(
-        {
-          error: "No credits left",
-        },
-        {
-          status: 403,
-        }
+        { error: "No credits left" },
+        { status: 403 }
       );
     }
 
@@ -100,19 +86,12 @@ JSON format:
     const response = await client.chat.completions.create({
       model: "gpt-4.1-mini",
       temperature: 0.9,
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
+      messages: [{ role: "user", content: prompt }],
     });
 
     const text = response.choices[0].message.content || "[]";
-
     const posts = JSON.parse(text);
 
-    // SAVE POSTS
     const rows = posts.map((post: any) => ({
       user_id: userId,
       business_type: businessType,
@@ -125,28 +104,29 @@ JSON format:
 
     await supabase.from("generated_posts").insert(rows);
 
-    // DECREASE CREDITS
-    await supabase
-      .from("user_credits")
-      .update({
-        credits: creditData.credits - 1,
-      })
-      .eq("user_id", userId);
+    let creditsLeft = creditData?.credits ?? 0;
+
+    if (!isPro) {
+      creditsLeft = creditData.credits - 1;
+
+      await supabase
+        .from("user_credits")
+        .update({
+          credits: creditsLeft,
+        })
+        .eq("user_id", userId);
+    }
 
     return NextResponse.json({
       result: posts,
-      creditsLeft: creditData.credits - 1,
+      creditsLeft: isPro ? 999999 : creditsLeft,
     });
   } catch (error) {
     console.error(error);
 
     return NextResponse.json(
-      {
-        error: "Something went wrong",
-      },
-      {
-        status: 500,
-      }
+      { error: "Something went wrong" },
+      { status: 500 }
     );
   }
 }
