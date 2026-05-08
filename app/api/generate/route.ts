@@ -40,6 +40,7 @@ export async function POST(req: Request) {
         .insert({
           user_id: userId,
           credits: 10,
+          image_credits: 1,
           plan: "free",
         })
         .select()

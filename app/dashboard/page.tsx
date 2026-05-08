@@ -25,10 +25,25 @@ export default function DashboardPage() {
   const [checkingAuth, setCheckingAuth] = useState(true);
 
   const [creditsLeft, setCreditsLeft] = useState<number | null>(null);
+  const [imageCreditsLeft, setImageCreditsLeft] = useState<number | null>(null);
   const [plan, setPlan] = useState<string | null>(null);
   const [stripeCustomerId, setStripeCustomerId] = useState<string | null>(null);
 
-  const isPro = plan === "pro" || creditsLeft === 999999;
+  const isPaid = plan === "normal" || plan === "pro";
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get("success") === "true") {
+      toast.success("Upgrade successful. Your plan is now active.");
+      window.history.replaceState({}, "", "/dashboard");
+    }
+
+    if (params.get("canceled") === "true") {
+      toast.error("Checkout canceled.");
+      window.history.replaceState({}, "", "/dashboard");
+    }
+  }, []);
 
   useEffect(() => {
     async function checkUser() {
@@ -43,7 +58,7 @@ export default function DashboardPage() {
 
       const { data: creditData, error } = await supabase
         .from("user_credits")
-        .select("credits, plan, stripe_customer_id")
+        .select("credits, image_credits, plan, stripe_customer_id")
         .eq("user_id", user.id)
         .single();
 
@@ -54,8 +69,9 @@ export default function DashboardPage() {
 
       if (creditData) {
         setPlan(creditData.plan);
+        setCreditsLeft(creditData.credits);
+        setImageCreditsLeft(creditData.image_credits);
         setStripeCustomerId(creditData.stripe_customer_id);
-        setCreditsLeft(creditData.plan === "pro" ? 999999 : creditData.credits);
       }
 
       setCheckingAuth(false);
@@ -111,10 +127,10 @@ export default function DashboardPage() {
 
       if (data.creditsLeft !== undefined) {
         setCreditsLeft(data.creditsLeft);
+      }
 
-        if (data.creditsLeft === 999999) {
-          setPlan("pro");
-        }
+      if (data.plan) {
+        setPlan(data.plan);
       }
     } catch (error) {
       console.error(error);
@@ -130,8 +146,22 @@ export default function DashboardPage() {
       return;
     }
 
+    if (imageCreditsLeft !== null && imageCreditsLeft <= 0) {
+      toast.error("No image credits left. Upgrade your plan to generate more images.");
+      return;
+    }
+
     try {
       setImageLoading(true);
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        window.location.href = "/login";
+        return;
+      }
 
       const response = await fetch("/api/generate-image", {
         method: "POST",
@@ -139,6 +169,7 @@ export default function DashboardPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          userId: user.id,
           prompt: `
 Create a premium square social media marketing image for a ${businessType}.
 
@@ -168,6 +199,13 @@ modern beauty industry aesthetic, premium lighting, clean composition, elegant c
       }
 
       setGeneratedImage(data.image);
+
+      if (data.imageCreditsLeft !== undefined) {
+        setImageCreditsLeft(data.imageCreditsLeft);
+      } else if (imageCreditsLeft !== null) {
+        setImageCreditsLeft(imageCreditsLeft - 1);
+      }
+
       toast.success("Image generated successfully");
     } catch (error) {
       console.error(error);
@@ -177,7 +215,7 @@ modern beauty industry aesthetic, premium lighting, clean composition, elegant c
     }
   }
 
-  async function upgradeToPro() {
+  async function upgradeToPlan(planType: "normal" | "pro") {
     try {
       const {
         data: { user },
@@ -196,6 +234,7 @@ modern beauty industry aesthetic, premium lighting, clean composition, elegant c
         body: JSON.stringify({
           userId: user.id,
           email: user.email,
+          planType,
         }),
       });
 
@@ -265,9 +304,11 @@ modern beauty industry aesthetic, premium lighting, clean composition, elegant c
     <main className="min-h-screen bg-zinc-950 text-white">
       <div className="mx-auto max-w-6xl px-6 py-16">
         <DashboardHeader
-          isPro={isPro}
+          plan={plan}
           creditsLeft={creditsLeft}
-          onUpgrade={upgradeToPro}
+          imageCreditsLeft={imageCreditsLeft}
+          onUpgradeNormal={() => upgradeToPlan("normal")}
+          onUpgradePro={() => upgradeToPlan("pro")}
           onManageSubscription={manageSubscription}
           onLogout={logout}
         />
@@ -288,7 +329,7 @@ modern beauty industry aesthetic, premium lighting, clean composition, elegant c
             setPostCount={setPostCount}
             topic={topic}
             setTopic={setTopic}
-            isPro={isPro}
+            isPro={isPaid}
             creditsLeft={creditsLeft}
             loading={loading}
             imageLoading={imageLoading}
