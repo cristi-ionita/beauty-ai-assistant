@@ -68,5 +68,27 @@ export async function POST(req: Request) {
     }
   }
 
+  if (event.type === "customer.subscription.deleted") {
+    const subscription = event.data.object as Stripe.Subscription;
+    const customerId = subscription.customer as string;
+
+    console.log("Subscription ended for customer:", customerId);
+
+    const { data, error } = await supabase
+      .from("user_credits")
+      .update({
+        plan: "free",
+        credits: 10,
+      })
+      .eq("stripe_customer_id", customerId)
+      .select();
+
+    if (error) {
+      console.error("Failed to downgrade user:", error);
+    } else {
+      console.log("User downgraded to free:", data);
+    }
+  }
+
   return NextResponse.json({ received: true });
 }
