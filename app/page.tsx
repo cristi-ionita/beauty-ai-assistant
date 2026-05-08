@@ -38,8 +38,8 @@ export default function Home() {
           </h1>
 
           <p className="mt-8 max-w-2xl text-lg leading-8 text-zinc-400">
-            Create captions, hashtags, CTAs, promotional posts and social media
-            campaigns for salons, spas, barbershops and beauty studios using AI.
+            Create captions, hashtags, CTAs, promotional posts and AI marketing
+            images for salons, spas, barbershops and beauty studios.
           </p>
 
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
@@ -59,7 +59,7 @@ export default function Home() {
           </div>
 
           <p className="mt-5 text-sm text-zinc-500">
-            No credit card required to start.
+            Start with 10 free text generations and 1 free AI image.
           </p>
 
           <div className="mt-16 grid w-full max-w-5xl gap-6 md:grid-cols-3">
@@ -69,8 +69,8 @@ export default function Home() {
                 text: "Generate social media posts optimized for Instagram, Facebook, TikTok and more.",
               },
               {
-                title: "Multiple Languages",
-                text: "Create beauty marketing content in English, Spanish, French, German and more.",
+                title: "AI Image Generation",
+                text: "Create premium square marketing visuals for beauty promotions and social posts.",
               },
               {
                 title: "Built for Salons",
@@ -94,9 +94,7 @@ export default function Home() {
 
       <section id="examples" className="mx-auto max-w-7xl px-6 py-24">
         <div className="mb-14 text-center">
-          <h2 className="text-4xl font-bold">
-            Example AI-generated content
-          </h2>
+          <h2 className="text-4xl font-bold">Example AI-generated content</h2>
 
           <p className="mt-4 text-zinc-400">
             High-quality beauty marketing content generated in seconds.
@@ -152,11 +150,11 @@ export default function Home() {
           {[
             "Instagram captions",
             "TikTok content ideas",
+            "AI image generation",
             "Beauty promotion campaigns",
             "Luxury brand tone",
             "Multi-language generation",
             "Hashtag generation",
-            "CTA optimization",
             "Content history",
           ].map((feature) => (
             <div
@@ -211,25 +209,28 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="pricing" className="mx-auto max-w-6xl px-6 py-24">
+      <section id="pricing" className="mx-auto max-w-7xl px-6 py-24">
         <div className="mb-14 text-center">
           <h2 className="text-4xl font-bold">Simple pricing</h2>
 
-          <p className="mt-4 text-zinc-400">Start free. Upgrade anytime.</p>
+          <p className="mt-4 text-zinc-400">
+            Start free. Upgrade when you need more content and images.
+          </p>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-2">
+        <div className="grid gap-8 lg:grid-cols-3">
           <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-8">
             <p className="text-sm text-zinc-400">FREE</p>
 
-            <h3 className="mt-3 text-4xl font-bold">$0</h3>
+            <h3 className="mt-3 text-4xl font-bold">€0</h3>
 
             <p className="mt-4 text-zinc-400">
               Perfect for testing the platform.
             </p>
 
             <ul className="mt-8 space-y-4 text-zinc-300">
-              <li>• 10 free generations</li>
+              <li>• 10 text generations</li>
+              <li>• 1 AI image</li>
               <li>• 3 posts per generation</li>
               <li>• Multi-language support</li>
               <li>• Content history</li>
@@ -243,20 +244,24 @@ export default function Home() {
             </a>
           </div>
 
-          <div className="rounded-3xl border border-pink-500/30 bg-pink-500/10 p-8">
-            <p className="text-sm text-pink-300">PRO</p>
+          <div className="relative rounded-3xl border border-pink-500/40 bg-pink-500/10 p-8">
+            <div className="absolute -top-4 left-8 rounded-full bg-pink-500 px-4 py-1 text-sm font-semibold">
+              Most Popular
+            </div>
 
-            <h3 className="mt-3 text-4xl font-bold">$19/mo</h3>
+            <p className="text-sm text-pink-300">NORMAL</p>
+
+            <h3 className="mt-3 text-4xl font-bold">€19/mo</h3>
 
             <p className="mt-4 text-zinc-300">
-              For serious beauty businesses and agencies.
+              For salons and beauty creators posting every week.
             </p>
 
             <ul className="mt-8 space-y-4 text-zinc-200">
-              <li>• Unlimited generations</li>
+              <li>• Unlimited text generations</li>
+              <li>• 30 AI images per month</li>
               <li>• Up to 10 posts per generation</li>
-              <li>• Advanced AI post generation</li>
-              <li>• Premium marketing tones</li>
+              <li>• Premium tones and goals</li>
               <li>• Multi-platform optimization</li>
               <li>• Cancel anytime</li>
             </ul>
@@ -265,7 +270,33 @@ export default function Home() {
               href="/dashboard"
               className="mt-10 inline-flex rounded-full bg-pink-500 px-6 py-3 font-semibold text-white hover:bg-pink-400"
             >
-              Upgrade to Pro
+              Upgrade Normal
+            </a>
+          </div>
+
+          <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-8">
+            <p className="text-sm text-zinc-400">PRO</p>
+
+            <h3 className="mt-3 text-4xl font-bold">€49/mo</h3>
+
+            <p className="mt-4 text-zinc-400">
+              For agencies, power users and multi-brand content workflows.
+            </p>
+
+            <ul className="mt-8 space-y-4 text-zinc-300">
+              <li>• Unlimited text generations</li>
+              <li>• 150 AI images per month</li>
+              <li>• Up to 10 posts per generation</li>
+              <li>• Advanced campaign generation</li>
+              <li>• Priority creative workflow</li>
+              <li>• Cancel anytime</li>
+            </ul>
+
+            <a
+              href="/dashboard"
+              className="mt-10 inline-flex rounded-full border border-zinc-700 px-6 py-3 font-semibold hover:bg-zinc-800"
+            >
+              Upgrade Pro
             </a>
           </div>
         </div>
@@ -291,12 +322,16 @@ export default function Home() {
               a: "The app supports multiple languages including English, Spanish, French, German, Italian, Portuguese, Romanian, Dutch, Polish, Turkish and Arabic.",
             },
             {
-              q: "Can I cancel anytime?",
-              a: "Yes. Pro subscriptions can be managed and canceled from the billing portal.",
+              q: "How many AI images do I get?",
+              a: "Free users get 1 AI image. Normal includes 30 AI images per month. Pro includes 150 AI images per month.",
             },
             {
-              q: "What happens when I cancel Pro?",
-              a: "You keep Pro access until the end of your paid billing period. After that, your account returns to the Free plan.",
+              q: "Can I cancel anytime?",
+              a: "Yes. Paid subscriptions can be managed and canceled from the billing portal.",
+            },
+            {
+              q: "What happens when I cancel?",
+              a: "You keep paid access until the end of your billing period. After that, your account returns to the Free plan.",
             },
             {
               q: "Who is this for?",
@@ -321,8 +356,8 @@ export default function Home() {
         </h2>
 
         <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-zinc-400">
-          Generate better beauty marketing content in seconds and stay
-          consistent across every platform.
+          Generate better beauty marketing content and premium AI visuals in
+          seconds.
         </p>
 
         <a
