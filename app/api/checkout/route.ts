@@ -16,10 +16,17 @@ export async function POST(req: Request) {
       );
     }
 
+    const customer = await stripe.customers.create({
+      email,
+      metadata: {
+        userId,
+      },
+    });
+
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       payment_method_types: ["card"],
-      customer_email: email,
+      customer: customer.id,
       line_items: [
         {
           price: process.env.STRIPE_PRICE_ID!,
@@ -29,17 +36,22 @@ export async function POST(req: Request) {
       metadata: {
         userId,
       },
+      subscription_data: {
+        metadata: {
+          userId,
+        },
+      },
       success_url:
-  "https://beauty-ai-assistant-kappa.vercel.app/dashboard?success=true",
+        "https://beauty-ai-assistant-kappa.vercel.app/dashboard?success=true",
       cancel_url:
-  "https://beauty-ai-assistant-kappa.vercel.app/dashboard?canceled=true",
+        "https://beauty-ai-assistant-kappa.vercel.app/dashboard?canceled=true",
     });
 
     return NextResponse.json({
       url: session.url,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Checkout failed:", error);
 
     return NextResponse.json(
       { error: "Checkout failed" },
