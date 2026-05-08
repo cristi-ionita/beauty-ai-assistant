@@ -12,7 +12,11 @@ type GeneratedPost = {
 export default function DashboardPage() {
   const [businessType, setBusinessType] = useState("Barbershop");
   const [topic, setTopic] = useState("");
-  const [language, setLanguage] = useState("Romanian");
+  const [language, setLanguage] = useState("English");
+  const [platform, setPlatform] = useState("Instagram");
+  const [tone, setTone] = useState("Friendly");
+  const [goal, setGoal] = useState("Get bookings");
+  const [postCount, setPostCount] = useState(3);
 
   const [posts, setPosts] = useState<GeneratedPost[]>([]);
   const [loading, setLoading] = useState(false);
@@ -81,6 +85,10 @@ export default function DashboardPage() {
           businessType,
           topic,
           language,
+          platform,
+          tone,
+          goal,
+          postCount,
           userId: user.id,
         }),
       });
@@ -185,6 +193,17 @@ export default function DashboardPage() {
     navigator.clipboard.writeText(text);
   }
 
+  function copyAllPosts() {
+    const text = posts
+      .map(
+        (post, index) =>
+          `POST ${index + 1}\n\n${post.caption}\n\n${post.hashtags}\n\n${post.cta}`
+      )
+      .join("\n\n-------------------\n\n");
+
+    navigator.clipboard.writeText(text);
+  }
+
   async function logout() {
     await supabase.auth.signOut();
     window.location.href = "/login";
@@ -247,7 +266,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-[400px_1fr]">
+        <div className="grid gap-8 lg:grid-cols-[420px_1fr]">
           <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
             <h2 className="mb-6 text-2xl font-semibold">Generate content</h2>
 
@@ -267,6 +286,10 @@ export default function DashboardPage() {
                   <option>Lash Studio</option>
                   <option>Hair Salon</option>
                   <option>Beauty Salon</option>
+                  <option>Spa</option>
+                  <option>Massage Studio</option>
+                  <option>Makeup Artist</option>
+                  <option>Med Spa</option>
                 </select>
               </div>
 
@@ -275,15 +298,98 @@ export default function DashboardPage() {
                   Language
                 </label>
 
-                <select
+                <input
+                  type="text"
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
+                  placeholder="Example: English, Spanish, French..."
+                  className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm text-zinc-400">
+                  Platform
+                </label>
+
+                <select
+                  value={platform}
+                  onChange={(e) => setPlatform(e.target.value)}
                   className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
                 >
-                  <option>Romanian</option>
-                  <option>English</option>
-                  <option>German</option>
+                  <option>Instagram</option>
+                  <option>Facebook</option>
+                  <option>TikTok</option>
+                  <option>LinkedIn</option>
+                  <option>Google Business Profile</option>
                 </select>
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm text-zinc-400">
+                  Tone
+                </label>
+
+                <select
+                  value={tone}
+                  onChange={(e) => setTone(e.target.value)}
+                  className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
+                >
+                  <option>Friendly</option>
+                  <option>Professional</option>
+                  <option>Luxury</option>
+                  <option>Bold</option>
+                  <option>Funny</option>
+                  <option>Elegant</option>
+                  <option>Warm</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm text-zinc-400">
+                  Goal
+                </label>
+
+                <select
+                  value={goal}
+                  onChange={(e) => setGoal(e.target.value)}
+                  className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
+                >
+                  <option>Get bookings</option>
+                  <option>Promote offer</option>
+                  <option>Educate clients</option>
+                  <option>Announce service</option>
+                  <option>Increase engagement</option>
+                  <option>Sell gift cards</option>
+                  <option>Win back old clients</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm text-zinc-400">
+                  Number of posts
+                </label>
+
+                <select
+                  value={postCount}
+                  onChange={(e) => setPostCount(Number(e.target.value))}
+                  className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
+                >
+                  <option value={3}>3 Posts</option>
+
+                  {isPro && (
+                    <>
+                      <option value={5}>5 Posts</option>
+                      <option value={10}>10 Posts</option>
+                    </>
+                  )}
+                </select>
+
+                {!isPro && (
+                  <p className="mt-2 text-xs text-zinc-500">
+                    Upgrade to Pro for 5 and 10 post generations.
+                  </p>
+                )}
               </div>
 
               <div>
@@ -294,8 +400,8 @@ export default function DashboardPage() {
                 <textarea
                   value={topic}
                   onChange={(e) => setTopic(e.target.value)}
-                  placeholder="Example: Summer nails promotion..."
-                  className="min-h-[120px] w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
+                  placeholder="Example: Summer nails promotion, new haircut service, discount for first-time clients..."
+                  className="min-h-[130px] w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
                 />
               </div>
 
@@ -313,13 +419,23 @@ export default function DashboardPage() {
 
               {creditsLeft === 0 && !isPro && (
                 <p className="text-sm text-zinc-400">
-                  You used all free credits.
+                  You used all free credits. Upgrade to Pro for unlimited
+                  generations.
                 </p>
               )}
             </div>
           </div>
 
           <div className="space-y-6">
+            {posts.length > 0 && (
+              <button
+                onClick={copyAllPosts}
+                className="rounded-xl border border-zinc-700 px-5 py-3 text-sm hover:bg-zinc-900"
+              >
+                Copy All Posts
+              </button>
+            )}
+
             {posts.length === 0 && (
               <div className="rounded-3xl border border-dashed border-zinc-800 bg-zinc-900 p-10 text-center text-zinc-500">
                 Generated posts will appear here.
