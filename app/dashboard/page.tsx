@@ -17,9 +17,12 @@ export default function DashboardPage() {
   const [posts, setPosts] = useState<GeneratedPost[]>([]);
   const [loading, setLoading] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
+
   const [creditsLeft, setCreditsLeft] = useState<number | null>(null);
   const [plan, setPlan] = useState<string | null>(null);
   const [stripeCustomerId, setStripeCustomerId] = useState<string | null>(null);
+
+  const isPro = plan === "pro" || creditsLeft === 999999;
 
   useEffect(() => {
     async function checkUser() {
@@ -38,19 +41,14 @@ export default function DashboardPage() {
         .eq("user_id", user.id)
         .single();
 
-      console.log("Logged user id:", user.id);
-      console.log("Credit data:", creditData);
-      console.log("Credit error:", error);
+      if (error) {
+        console.error("Failed to load user credits:", error);
+      }
 
       if (creditData) {
         setPlan(creditData.plan);
         setStripeCustomerId(creditData.stripe_customer_id);
-
-        if (creditData.plan === "pro") {
-          setCreditsLeft(999999);
-        } else {
-          setCreditsLeft(creditData.credits);
-        }
+        setCreditsLeft(creditData.plan === "pro" ? 999999 : creditData.credits);
       }
 
       setCheckingAuth(false);
@@ -98,6 +96,10 @@ export default function DashboardPage() {
 
       if (data.creditsLeft !== undefined) {
         setCreditsLeft(data.creditsLeft);
+
+        if (data.creditsLeft === 999999) {
+          setPlan("pro");
+        }
       }
     } catch (error) {
       console.error(error);
@@ -133,6 +135,8 @@ export default function DashboardPage() {
 
       if (data.url) {
         window.location.href = data.url;
+      } else {
+        alert(data.error || "Checkout failed");
       }
     } catch (error) {
       console.error(error);
@@ -143,7 +147,7 @@ export default function DashboardPage() {
   async function manageSubscription() {
     try {
       if (!stripeCustomerId) {
-        alert("Stripe customer ID missing");
+        alert("Stripe customer ID missing. Please refresh the page.");
         return;
       }
 
@@ -200,14 +204,10 @@ export default function DashboardPage() {
             </p>
 
             <p className="mt-2 text-sm text-pink-300">
-              Plan: {plan ?? "none"} | Credits: {creditsLeft ?? "..."}
+              {isPro ? "Plan: Pro" : `Credits left: ${creditsLeft ?? "..."}`}
             </p>
 
-            <p className="mt-1 text-xs text-zinc-500">
-              Stripe customer: {stripeCustomerId ?? "missing"}
-            </p>
-
-            {plan === "pro" ? (
+            {isPro ? (
               <button
                 onClick={manageSubscription}
                 className="mt-4 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-zinc-200"
@@ -305,7 +305,7 @@ export default function DashboardPage() {
                     : "Generate Posts"}
               </button>
 
-              {creditsLeft === 0 && (
+              {creditsLeft === 0 && !isPro && (
                 <p className="text-sm text-zinc-400">
                   You used all free credits.
                 </p>
