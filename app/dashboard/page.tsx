@@ -18,6 +18,8 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [creditsLeft, setCreditsLeft] = useState<number | null>(null);
+  const [plan, setPlan] = useState<string | null>(null);
+  const [stripeCustomerId, setStripeCustomerId] = useState<string | null>(null);
 
   useEffect(() => {
     async function checkUser() {
@@ -30,13 +32,20 @@ export default function DashboardPage() {
         return;
       }
 
-      const { data: creditData } = await supabase
+      const { data: creditData, error } = await supabase
         .from("user_credits")
-        .select("credits, plan")
+        .select("credits, plan, stripe_customer_id")
         .eq("user_id", user.id)
         .single();
 
+      console.log("Logged user id:", user.id);
+      console.log("Credit data:", creditData);
+      console.log("Credit error:", error);
+
       if (creditData) {
+        setPlan(creditData.plan);
+        setStripeCustomerId(creditData.stripe_customer_id);
+
         if (creditData.plan === "pro") {
           setCreditsLeft(999999);
         } else {
@@ -131,6 +140,36 @@ export default function DashboardPage() {
     }
   }
 
+  async function manageSubscription() {
+    try {
+      if (!stripeCustomerId) {
+        alert("Stripe customer ID missing");
+        return;
+      }
+
+      const response = await fetch("/api/portal", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          customerId: stripeCustomerId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert(data.error || "Portal failed");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Stripe portal failed");
+    }
+  }
+
   function copyPost(post: GeneratedPost) {
     const text = `${post.caption}\n\n${post.hashtags}\n\n${post.cta}`;
     navigator.clipboard.writeText(text);
@@ -154,24 +193,35 @@ export default function DashboardPage() {
       <div className="mx-auto max-w-6xl px-6 py-16">
         <div className="mb-10 flex items-center justify-between gap-6">
           <div>
-            <h1 className="text-4xl font-bold">
-              Content Generator
-            </h1>
+            <h1 className="text-4xl font-bold">Content Generator</h1>
 
             <p className="mt-3 text-zinc-400">
               Generate social media content for beauty businesses.
             </p>
 
             <p className="mt-2 text-sm text-pink-300">
-              Credits left: {creditsLeft ?? "..."}
+              Plan: {plan ?? "none"} | Credits: {creditsLeft ?? "..."}
             </p>
 
-            <button
-              onClick={upgradeToPro}
-              className="mt-4 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-zinc-200"
-            >
-              Upgrade to Pro
-            </button>
+            <p className="mt-1 text-xs text-zinc-500">
+              Stripe customer: {stripeCustomerId ?? "missing"}
+            </p>
+
+            {plan === "pro" ? (
+              <button
+                onClick={manageSubscription}
+                className="mt-4 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-zinc-200"
+              >
+                Manage Subscription
+              </button>
+            ) : (
+              <button
+                onClick={upgradeToPro}
+                className="mt-4 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-zinc-200"
+              >
+                Upgrade to Pro
+              </button>
+            )}
           </div>
 
           <div className="flex gap-3">
@@ -193,9 +243,7 @@ export default function DashboardPage() {
 
         <div className="grid gap-8 lg:grid-cols-[400px_1fr]">
           <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
-            <h2 className="mb-6 text-2xl font-semibold">
-              Generate content
-            </h2>
+            <h2 className="mb-6 text-2xl font-semibold">Generate content</h2>
 
             <div className="space-y-5">
               <div>
@@ -292,9 +340,7 @@ export default function DashboardPage() {
 
                 <div className="space-y-5">
                   <div>
-                    <p className="mb-2 text-sm text-zinc-500">
-                      Caption
-                    </p>
+                    <p className="mb-2 text-sm text-zinc-500">Caption</p>
 
                     <p className="whitespace-pre-wrap leading-8 text-zinc-300">
                       {post.caption}
@@ -302,23 +348,15 @@ export default function DashboardPage() {
                   </div>
 
                   <div>
-                    <p className="mb-2 text-sm text-zinc-500">
-                      Hashtags
-                    </p>
+                    <p className="mb-2 text-sm text-zinc-500">Hashtags</p>
 
-                    <p className="text-pink-300">
-                      {post.hashtags}
-                    </p>
+                    <p className="text-pink-300">{post.hashtags}</p>
                   </div>
 
                   <div>
-                    <p className="mb-2 text-sm text-zinc-500">
-                      CTA
-                    </p>
+                    <p className="mb-2 text-sm text-zinc-500">CTA</p>
 
-                    <p className="text-zinc-300">
-                      {post.cta}
-                    </p>
+                    <p className="text-zinc-300">{post.cta}</p>
                   </div>
                 </div>
               </div>

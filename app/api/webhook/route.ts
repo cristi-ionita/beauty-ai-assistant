@@ -9,7 +9,10 @@ export async function POST(req: Request) {
   const signature = req.headers.get("stripe-signature");
 
   if (!signature) {
-    return NextResponse.json({ error: "Missing Stripe signature" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Missing Stripe signature" },
+      { status: 400 }
+    );
   }
 
   let event: Stripe.Event;
@@ -22,14 +25,21 @@ export async function POST(req: Request) {
     );
   } catch (error) {
     console.error("Webhook signature verification failed:", error);
-    return NextResponse.json({ error: "Invalid webhook signature" }, { status: 400 });
+
+    return NextResponse.json(
+      { error: "Invalid webhook signature" },
+      { status: 400 }
+    );
   }
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
+
     const userId = session.metadata?.userId;
+    const customerId = session.customer as string;
 
     console.log("Checkout completed for userId:", userId);
+    console.log("Stripe customer:", customerId);
 
     if (!userId) {
       console.error("No userId found in Stripe metadata");
@@ -43,6 +53,7 @@ export async function POST(req: Request) {
           user_id: userId,
           plan: "pro",
           credits: 999999,
+          stripe_customer_id: customerId,
         },
         {
           onConflict: "user_id",
