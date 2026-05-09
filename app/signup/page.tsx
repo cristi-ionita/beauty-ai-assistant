@@ -10,14 +10,18 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   async function signup() {
+    setErrorMessage("");
+
     if (!email.trim() || !password.trim()) {
-      alert("Please enter your email and password.");
+      setErrorMessage("Please enter your email and password.");
       return;
     }
 
     if (password.length < 6) {
-      alert("Password must be at least 6 characters.");
+      setErrorMessage("Password must be at least 6 characters.");
       return;
     }
 
@@ -39,13 +43,18 @@ export default function SignupPage() {
       const checkData = await checkResponse.json();
 
       if (!checkResponse.ok) {
-        alert(checkData.error || "Could not check account.");
+        setErrorMessage(
+          checkData.error || "Could not check account."
+        );
+
         return;
       }
 
       if (checkData.exists) {
-        alert("An account already exists with this email. Please log in.");
-        window.location.href = "/login";
+        setErrorMessage(
+          "An account already exists with this email. Please log in."
+        );
+
         return;
       }
 
@@ -59,15 +68,17 @@ export default function SignupPage() {
       });
 
       if (error) {
-        alert(error.message);
+        setErrorMessage(error.message);
         return;
       }
 
       setEmail(normalizedEmail);
+
       setEmailSent(true);
     } catch (error) {
       console.error(error);
-      alert("Signup failed");
+
+      setErrorMessage("Signup failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -81,13 +92,17 @@ export default function SignupPage() {
             ✉️
           </div>
 
-          <h1 className="text-3xl font-bold">Check your email</h1>
+          <h1 className="text-3xl font-bold">
+            Check your email
+          </h1>
 
           <p className="mt-4 leading-7 text-zinc-400">
             We sent a confirmation link to:
           </p>
 
-          <p className="mt-2 font-semibold text-pink-300">{email}</p>
+          <p className="mt-2 font-semibold text-pink-300">
+            {email}
+          </p>
 
           <p className="mt-6 leading-7 text-zinc-500">
             Open the email and confirm your account to access your dashboard.
@@ -117,7 +132,9 @@ export default function SignupPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-zinc-950 px-6 text-white">
       <div className="w-full max-w-md rounded-3xl border border-zinc-800 bg-zinc-900 p-8">
-        <h1 className="text-3xl font-bold">Create account</h1>
+        <h1 className="text-3xl font-bold">
+          Create account
+        </h1>
 
         <p className="mt-3 text-zinc-400">
           Start generating business marketing content with AI.
@@ -127,7 +144,7 @@ export default function SignupPage() {
           <input
             type="email"
             placeholder="Email"
-            className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
+            className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-pink-500"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -135,7 +152,7 @@ export default function SignupPage() {
           <input
             type="password"
             placeholder="Password"
-            className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
+            className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-pink-500"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -143,13 +160,24 @@ export default function SignupPage() {
           <button
             onClick={signup}
             disabled={loading}
-            className="w-full rounded-xl bg-pink-500 py-4 font-semibold hover:bg-pink-400 disabled:opacity-50"
+            className="w-full rounded-xl bg-pink-500 py-4 font-semibold transition hover:bg-pink-400 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {loading ? "Creating account..." : "Create account"}
+            {loading
+              ? "Creating account..."
+              : "Create account"}
           </button>
+
+          {errorMessage && (
+            <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+              {errorMessage}
+            </div>
+          )}
         </div>
 
-        <a href="/login" className="mt-6 block text-sm text-pink-300">
+        <a
+          href="/login"
+          className="mt-6 block text-sm text-pink-300 hover:text-pink-200"
+        >
           Already have an account? Login
         </a>
       </div>
