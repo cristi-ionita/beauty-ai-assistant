@@ -1,6 +1,7 @@
 "use client";
 
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabase";
 
 type DashboardActionsProps = {
   businessType: string;
@@ -260,7 +261,7 @@ The final result should look like a €10,000 professional advertising campaign.
       const user = await getCurrentUserOrRedirect();
 
       if (!user || !user.email) {
-        window.location.href = "/";
+        window.location.replace("/login");
         return;
       }
 
@@ -294,7 +295,7 @@ The final result should look like a €10,000 professional advertising campaign.
       const user = await getCurrentUserOrRedirect();
 
       if (!user || !user.email) {
-        window.location.href = "/";
+        window.location.replace("/login");
         return;
       }
 
@@ -324,7 +325,8 @@ The final result should look like a €10,000 professional advertising campaign.
   }
 
   async function logout() {
-    window.location.href = "/";
+    await supabase.auth.signOut();
+    window.location.replace("/");
   }
 
   return {
