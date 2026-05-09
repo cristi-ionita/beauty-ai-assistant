@@ -6,6 +6,7 @@ import GeneratorForm from "@/components/dashboard/GeneratorForm";
 import ResultsPanel from "@/components/dashboard/ResultsPanel";
 import UpgradeModal from "@/components/dashboard/UpgradeModal";
 import LockedFeatures from "@/components/dashboard/LockedFeatures";
+import ImageHistory from "@/components/dashboard/ImageHistory";
 
 type DashboardContentProps = {
   businessType: string;
@@ -42,6 +43,8 @@ type DashboardContentProps = {
 
   showUpgradeModal: boolean;
   setShowUpgradeModal: Dispatch<SetStateAction<boolean>>;
+
+  imageHistoryVersion: number;
 
   isPaid: boolean;
 
@@ -88,6 +91,8 @@ export default function DashboardContent({
 
   showUpgradeModal,
   setShowUpgradeModal,
+
+  imageHistoryVersion,
 
   isPaid,
 
@@ -147,7 +152,14 @@ export default function DashboardContent({
             <LockedFeatures isPaid={isPaid} />
           </div>
 
-          <ResultsPanel posts={posts} generatedImage={generatedImage} />
+          <div className="space-y-8">
+            <ResultsPanel
+              posts={posts}
+              generatedImage={generatedImage}
+            />
+
+            <ImageHistory refreshKey={imageHistoryVersion} />
+          </div>
         </div>
 
         <UpgradeModal

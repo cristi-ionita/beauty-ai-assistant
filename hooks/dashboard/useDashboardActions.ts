@@ -29,6 +29,10 @@ type DashboardActionsProps = {
 
   setShowUpgradeModal: (value: boolean) => void;
 
+  setImageHistoryVersion: (
+    value: (current: number) => number
+  ) => void;
+
   getCurrentUserOrRedirect: () => Promise<any>;
 };
 
@@ -57,6 +61,8 @@ export function useDashboardActions({
   setPlan,
 
   setShowUpgradeModal,
+
+  setImageHistoryVersion,
 
   getCurrentUserOrRedirect,
 }: DashboardActionsProps) {
@@ -245,6 +251,8 @@ The final result should look like a €10,000 professional advertising campaign.
       }
 
       setGeneratedImage(data.image);
+
+      setImageHistoryVersion((current) => current + 1);
 
       if (data.imageCreditsLeft !== undefined) {
         setImageCreditsLeft(data.imageCreditsLeft);

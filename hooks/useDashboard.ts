@@ -40,6 +40,7 @@ export function useDashboard() {
     setPlan: state.setPlan,
 
     setShowUpgradeModal: state.setShowUpgradeModal,
+    setImageHistoryVersion: state.setImageHistoryVersion,
 
     getCurrentUserOrRedirect,
   });
