@@ -23,30 +23,26 @@ export default function DashboardHeader({
   const planLabel = plan || "free";
 
   return (
-    <section className="mb-10">
-      <div className="relative overflow-hidden rounded-[2rem] border border-zinc-800 bg-zinc-900 p-8 shadow-2xl">
+    <section className="mb-8 sm:mb-10">
+      <div className="relative overflow-hidden rounded-[2rem] border border-zinc-800 bg-zinc-900 p-5 shadow-2xl sm:p-8">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(236,72,153,0.18),transparent_35%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(147,51,234,0.12),transparent_35%)]" />
 
         <div className="relative">
-          <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div>
-              <h1 className="max-w-3xl text-4xl font-black tracking-tight md:text-5xl">
+              <h1 className="max-w-3xl text-3xl font-black leading-tight tracking-tight sm:text-4xl md:text-5xl">
                 Content Generator
               </h1>
 
-              <p className="mt-4 max-w-2xl text-lg leading-8 text-zinc-400">
+              <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8">
                 Generate premium social media posts, captions, campaigns and AI
                 visuals for local businesses, creators and service brands.
               </p>
             </div>
 
-            <div className="grid min-w-[280px] gap-3 sm:grid-cols-3 lg:grid-cols-1">
-              <MetricCard
-                label="Current Plan"
-                value={planLabel}
-                highlight
-              />
+            <div className="grid w-full gap-3 sm:min-w-[280px] sm:grid-cols-3 lg:w-auto lg:grid-cols-1">
+              <MetricCard label="Current Plan" value={planLabel} highlight />
 
               <MetricCard
                 label="Text Credits"
@@ -64,18 +60,21 @@ export default function DashboardHeader({
             <div className="mt-8 grid gap-4 lg:grid-cols-2">
               <button
                 onClick={onUpgradeNormal}
-                className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white p-6 text-left text-zinc-950 transition hover:scale-[1.01] hover:bg-zinc-100"
+                className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white p-5 text-left text-zinc-950 transition hover:scale-[1.01] hover:bg-zinc-100 sm:p-6"
               >
                 <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-pink-500/20 blur-3xl transition group-hover:bg-pink-500/30" />
 
                 <div className="relative">
-                  <p className="text-sm font-semibold uppercase tracking-[0.25em] text-zinc-500">
+                  <p className="text-xs font-semibold uppercase tracking-[0.25em] text-zinc-500 sm:text-sm">
                     Normal
                   </p>
 
                   <div className="mt-3 flex items-end gap-2">
-                    <span className="text-4xl font-black">€19</span>
-                    <span className="mb-1 text-sm font-semibold text-zinc-500">
+                    <span className="text-3xl font-black sm:text-4xl">
+                      €19
+                    </span>
+
+                    <span className="mb-1 text-xs font-semibold text-zinc-500 sm:text-sm">
                       / month
                     </span>
                   </div>
@@ -91,32 +90,33 @@ export default function DashboardHeader({
                     <PlanPill dark text="Premium tones" />
                   </div>
 
-                  <p className="mt-6 text-sm font-bold">
-                    Upgrade Normal
-                  </p>
+                  <p className="mt-6 text-sm font-bold">Upgrade Normal</p>
                 </div>
               </button>
 
               <button
                 onClick={onUpgradePro}
-                className="group relative overflow-hidden rounded-3xl border border-pink-500/30 bg-gradient-to-br from-pink-500 via-fuchsia-500 to-purple-600 p-6 text-left text-white shadow-[0_0_45px_rgba(236,72,153,0.25)] transition hover:scale-[1.01]"
+                className="group relative overflow-hidden rounded-3xl border border-pink-500/30 bg-gradient-to-br from-pink-500 via-fuchsia-500 to-purple-600 p-5 text-left text-white shadow-[0_0_45px_rgba(236,72,153,0.25)] transition hover:scale-[1.01] sm:p-6"
               >
                 <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-white/20 blur-3xl transition group-hover:bg-white/30" />
 
                 <div className="relative">
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="text-sm font-semibold uppercase tracking-[0.25em] text-pink-100">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-xs font-semibold uppercase tracking-[0.25em] text-pink-100 sm:text-sm">
                       Pro
                     </p>
 
-                    <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-bold text-white">
+                    <span className="w-fit rounded-full bg-white/20 px-3 py-1 text-xs font-bold text-white">
                       Best Value
                     </span>
                   </div>
 
                   <div className="mt-3 flex items-end gap-2">
-                    <span className="text-4xl font-black">€49</span>
-                    <span className="mb-1 text-sm font-semibold text-pink-100">
+                    <span className="text-3xl font-black sm:text-4xl">
+                      €49
+                    </span>
+
+                    <span className="mb-1 text-xs font-semibold text-pink-100 sm:text-sm">
                       / month
                     </span>
                   </div>
@@ -132,27 +132,25 @@ export default function DashboardHeader({
                     <PlanPill text="Campaign workflows" />
                   </div>
 
-                  <p className="mt-6 text-sm font-bold">
-                    Upgrade Pro
-                  </p>
+                  <p className="mt-6 text-sm font-bold">Upgrade Pro</p>
                 </div>
               </button>
             </div>
           )}
 
           {isPaid && (
-            <div className="mt-8 rounded-3xl border border-pink-500/20 bg-zinc-950/70 p-6">
+            <div className="mt-8 rounded-3xl border border-pink-500/20 bg-zinc-950/70 p-5 sm:p-6">
               <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <p className="text-sm uppercase tracking-[0.25em] text-pink-300">
+                  <p className="text-xs uppercase tracking-[0.25em] text-pink-300 sm:text-sm">
                     {planLabel} Plan
                   </p>
 
-                  <h3 className="mt-2 text-3xl font-black text-white">
+                  <h3 className="mt-2 text-2xl font-black leading-tight text-white sm:text-3xl">
                     Unlimited creative access
                   </h3>
 
-                  <p className="mt-3 max-w-2xl leading-7 text-zinc-400">
+                  <p className="mt-3 max-w-2xl text-sm leading-7 text-zinc-400 sm:text-base">
                     Your subscription is active. Generate premium business
                     content, campaigns, captions and AI visuals with your
                     current plan.
@@ -173,7 +171,7 @@ export default function DashboardHeader({
 
               <button
                 onClick={onManageSubscription}
-                className="mt-6 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200"
+                className="mt-6 w-full rounded-xl bg-white px-5 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200 sm:w-auto"
               >
                 Manage Subscription
               </button>
@@ -195,11 +193,11 @@ function MetricCard({
   highlight?: boolean;
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 px-5 py-4">
+    <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 px-4 py-4 sm:px-5">
       <p className="text-xs text-zinc-500">{label}</p>
 
       <p
-        className={`mt-1 font-bold capitalize ${
+        className={`mt-1 text-sm font-bold capitalize sm:text-base ${
           highlight ? "text-pink-300" : "text-white"
         }`}
       >
@@ -219,9 +217,7 @@ function PlanPill({
   return (
     <span
       className={`rounded-full px-3 py-1 text-xs font-semibold ${
-        dark
-          ? "bg-zinc-950/10 text-zinc-700"
-          : "bg-white/15 text-white"
+        dark ? "bg-zinc-950/10 text-zinc-700" : "bg-white/15 text-white"
       }`}
     >
       ✓ {text}

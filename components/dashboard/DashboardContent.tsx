@@ -74,23 +74,19 @@ export default function DashboardContent({
     <main className="min-h-screen bg-zinc-950 text-white">
       <DashboardNav onLogout={logout} />
 
-      <div className="mx-auto max-w-6xl px-6 py-10">
-        <div className="relative overflow-hidden rounded-[2rem] border border-zinc-800 bg-zinc-900 p-8 shadow-2xl">
+      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
+        <div className="relative overflow-hidden rounded-[2rem] border border-zinc-800 bg-zinc-900 p-5 shadow-2xl sm:p-8">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(236,72,153,0.18),transparent_35%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(147,51,234,0.12),transparent_35%)]" />
 
           <div className="relative">
             <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <div className="mb-4 inline-flex rounded-full border border-pink-500/20 bg-pink-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-pink-300">
-                  AI Marketing Platform
-                </div>
-
-                <h1 className="max-w-3xl text-4xl font-black tracking-tight md:text-5xl">
+                <h1 className="max-w-3xl text-3xl font-black leading-tight tracking-tight sm:text-4xl md:text-5xl">
                   Content Generator
                 </h1>
 
-                <p className="mt-4 max-w-2xl text-lg leading-8 text-zinc-400">
+                <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8">
                   Generate premium social media posts, captions, campaigns and
                   cinematic AI visuals for local businesses and modern brands.
                 </p>
@@ -98,14 +94,14 @@ export default function DashboardContent({
                 <div className="mt-8">
                   <a
                     href="/generate"
-                    className="inline-flex items-center rounded-2xl bg-gradient-to-r from-pink-500 via-fuchsia-500 to-purple-600 px-7 py-4 text-sm font-bold text-white shadow-[0_0_35px_rgba(236,72,153,0.35)] transition hover:scale-[1.02]"
+                    className="inline-flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-pink-500 via-fuchsia-500 to-purple-600 px-6 py-4 text-sm font-bold text-white shadow-[0_0_35px_rgba(236,72,153,0.35)] transition hover:scale-[1.02] sm:w-auto"
                   >
-                    Generate Now →
+                    Generate Now
                   </a>
                 </div>
               </div>
 
-              <div className="grid min-w-[280px] gap-3 sm:grid-cols-3 lg:grid-cols-1">
+              <div className="grid w-full gap-3 sm:min-w-[280px] sm:grid-cols-3 lg:grid-cols-1">
                 <MetricCard
                   label="Current Plan"
                   value={plan || "free"}

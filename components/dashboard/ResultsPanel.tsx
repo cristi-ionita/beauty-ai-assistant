@@ -34,53 +34,63 @@ export default function ResultsPanel({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 sm:space-y-6">
       {posts.length > 0 && (
-        <button
-          onClick={copyAllPosts}
-          className="rounded-xl border border-zinc-700 px-5 py-3 text-sm hover:bg-zinc-900"
-        >
-          Copy All Posts
-        </button>
+        <div className="flex justify-end">
+          <button
+            onClick={copyAllPosts}
+            className="w-full rounded-xl border border-zinc-700 px-5 py-3 text-sm font-semibold transition hover:bg-zinc-900 sm:w-auto"
+          >
+            Copy All Posts
+          </button>
+        </div>
       )}
 
       {generatedImage && (
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <h3 className="text-xl font-semibold text-pink-300">
-              AI Generated Image
-            </h3>
+        <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-4 sm:p-6">
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.25em] text-pink-300">
+                AI Visual
+              </p>
+
+              <h3 className="mt-1 text-lg font-bold text-white sm:text-xl">
+                Generated Image
+              </h3>
+            </div>
 
             <a
               href={generatedImage}
-              download="beauty-ai-image.png"
-              className="rounded-lg border border-zinc-700 px-4 py-2 text-sm hover:bg-zinc-800"
+              download="businesscontent-ai-image.png"
+              className="inline-flex w-full justify-center rounded-xl border border-zinc-700 px-4 py-3 text-sm font-semibold transition hover:bg-zinc-800 sm:w-auto sm:py-2"
             >
               Download
             </a>
           </div>
 
-          <img
-            src={generatedImage}
-            alt="AI generated beauty marketing image"
-            className="w-full rounded-2xl"
-          />
+          <div className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950">
+            <img
+              src={generatedImage}
+              alt="AI generated business marketing image"
+              className="aspect-square w-full object-cover"
+            />
+          </div>
         </div>
       )}
 
       {posts.length === 0 && !generatedImage && (
-        <div className="rounded-3xl border border-dashed border-zinc-800 bg-zinc-900 p-14 text-center">
-          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-800 text-3xl">
+        <div className="rounded-3xl border border-dashed border-zinc-800 bg-zinc-900 p-8 text-center sm:p-14">
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-zinc-800 text-2xl sm:h-16 sm:w-16 sm:text-3xl">
             ✨
           </div>
 
-          <h3 className="text-xl font-semibold text-white">
+          <h3 className="text-lg font-bold text-white sm:text-xl">
             Your AI content will appear here
           </h3>
 
-          <p className="mt-3 max-w-md mx-auto text-sm leading-7 text-zinc-500">
+          <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-zinc-500">
             Generate captions, hashtags, CTAs and premium AI marketing images
-            for your beauty business in seconds.
+            for your business in seconds.
           </p>
         </div>
       )}
@@ -88,54 +98,66 @@ export default function ResultsPanel({
       {posts.map((post, index) => (
         <div
           key={index}
-          className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6"
+          className="rounded-3xl border border-zinc-800 bg-zinc-900 p-4 sm:p-6"
         >
-          <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-xl font-semibold text-pink-300">
-              Post #{index + 1}
-            </h3>
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.25em] text-pink-300">
+                Generated Post
+              </p>
+
+              <h3 className="mt-1 text-lg font-bold text-white sm:text-xl">
+                Post #{index + 1}
+              </h3>
+            </div>
 
             <button
               onClick={() => copyPost(post)}
-              className="rounded-lg border border-zinc-700 px-4 py-2 text-sm hover:bg-zinc-800"
+              className="w-full rounded-xl border border-zinc-700 px-4 py-3 text-sm font-semibold transition hover:bg-zinc-800 sm:w-auto sm:py-2"
             >
               Copy
             </button>
           </div>
 
           <div className="space-y-5">
-            <div>
-              <p className="mb-2 text-sm text-zinc-500">
-                Caption
-              </p>
-
-              <p className="whitespace-pre-wrap leading-8 text-zinc-300">
+            <ResultSection label="Caption">
+              <p className="whitespace-pre-wrap text-sm leading-7 text-zinc-300 sm:text-base sm:leading-8">
                 {post.caption}
               </p>
-            </div>
+            </ResultSection>
 
-            <div>
-              <p className="mb-2 text-sm text-zinc-500">
-                Hashtags
-              </p>
-
-              <p className="text-pink-300">
+            <ResultSection label="Hashtags">
+              <p className="break-words text-sm leading-7 text-pink-300 sm:text-base">
                 {post.hashtags}
               </p>
-            </div>
+            </ResultSection>
 
-            <div>
-              <p className="mb-2 text-sm text-zinc-500">
-                CTA
-              </p>
-
-              <p className="text-zinc-300">
+            <ResultSection label="CTA">
+              <p className="text-sm leading-7 text-zinc-300 sm:text-base">
                 {post.cta}
               </p>
-            </div>
+            </ResultSection>
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+function ResultSection({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <p className="mb-2 text-xs uppercase tracking-[0.2em] text-zinc-500">
+        {label}
+      </p>
+
+      {children}
     </div>
   );
 }

@@ -77,33 +77,35 @@ export default function GeneratorForm({
   onGenerateImage,
 }: GeneratorFormProps) {
   return (
-    <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
-      <h2 className="mb-6 text-2xl font-semibold">Generate content</h2>
+    <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-4 sm:p-6">
+      <div className="mb-5 sm:mb-6">
+        <h2 className="text-xl font-bold sm:text-2xl">
+          Generate content
+        </h2>
 
-      <div className="space-y-5">
-        <div>
-          <label className="mb-2 block text-sm text-zinc-400">
-            Business Type
-          </label>
+        <p className="mt-2 text-sm leading-6 text-zinc-500">
+          Choose your business, goal and campaign idea.
+        </p>
+      </div>
 
+      <div className="space-y-4 sm:space-y-5">
+        <FormField label="Business Type">
           <select
             value={businessType}
             onChange={(e) => setBusinessType(e.target.value)}
-            className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
+            className="field-input"
           >
             {businessTypes.map((type) => (
               <option key={type}>{type}</option>
             ))}
           </select>
-        </div>
+        </FormField>
 
-        <div>
-          <label className="mb-2 block text-sm text-zinc-400">Language</label>
-
+        <FormField label="Language">
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
-            className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
+            className="field-input"
           >
             <option>English</option>
             <option>Spanish</option>
@@ -117,15 +119,13 @@ export default function GeneratorForm({
             <option>Turkish</option>
             <option>Arabic</option>
           </select>
-        </div>
+        </FormField>
 
-        <div>
-          <label className="mb-2 block text-sm text-zinc-400">Platform</label>
-
+        <FormField label="Platform">
           <select
             value={platform}
             onChange={(e) => setPlatform(e.target.value)}
-            className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
+            className="field-input"
           >
             <option>Instagram</option>
             <option>Facebook</option>
@@ -133,15 +133,13 @@ export default function GeneratorForm({
             <option>LinkedIn</option>
             <option>Google Business Profile</option>
           </select>
-        </div>
+        </FormField>
 
-        <div>
-          <label className="mb-2 block text-sm text-zinc-400">Tone</label>
-
+        <FormField label="Tone">
           <select
             value={tone}
             onChange={(e) => setTone(e.target.value)}
-            className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
+            className="field-input"
           >
             <option>Friendly</option>
             <option>Professional</option>
@@ -155,15 +153,13 @@ export default function GeneratorForm({
             <option>Casual</option>
             <option>Local</option>
           </select>
-        </div>
+        </FormField>
 
-        <div>
-          <label className="mb-2 block text-sm text-zinc-400">Goal</label>
-
+        <FormField label="Goal">
           <select
             value={goal}
             onChange={(e) => setGoal(e.target.value)}
-            className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
+            className="field-input"
           >
             <option>Get bookings</option>
             <option>Promote offer</option>
@@ -178,17 +174,13 @@ export default function GeneratorForm({
             <option>Build local trust</option>
             <option>Generate leads</option>
           </select>
-        </div>
+        </FormField>
 
-        <div>
-          <label className="mb-2 block text-sm text-zinc-400">
-            Number of posts
-          </label>
-
+        <FormField label="Number of posts">
           <select
             value={postCount}
             onChange={(e) => setPostCount(Number(e.target.value))}
-            className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
+            className="field-input"
           >
             <option value={3}>3 Posts</option>
 
@@ -201,51 +193,69 @@ export default function GeneratorForm({
           </select>
 
           {!isPro && (
-            <p className="mt-2 text-xs text-zinc-500">
+            <p className="mt-2 text-xs leading-5 text-zinc-500">
               Upgrade to Normal or Pro for 5 and 10 post generations.
             </p>
           )}
-        </div>
+        </FormField>
 
-        <div>
-          <label className="mb-2 block text-sm text-zinc-400">
-            Topic / Promotion
-          </label>
-
+        <FormField label="Topic / Promotion">
           <textarea
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
             placeholder="Example: weekend offer, new service, lunch special, client testimonial, seasonal campaign..."
-            className="min-h-[130px] w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
+            className="min-h-[120px] w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm outline-none transition focus:border-pink-500 sm:min-h-[130px]"
           />
+        </FormField>
+
+        <div className="grid gap-3">
+          <button
+            onClick={onGeneratePosts}
+            disabled={loading || creditsLeft === 0}
+            className="w-full rounded-xl bg-pink-500 py-4 text-sm font-bold transition hover:bg-pink-400 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {loading
+              ? "Generating..."
+              : creditsLeft === 0
+                ? "No credits left"
+                : "Generate Posts"}
+          </button>
+
+          <button
+            onClick={onGenerateImage}
+            disabled={imageLoading || !topic.trim()}
+            className="w-full rounded-xl border border-zinc-700 py-4 text-sm font-bold transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {imageLoading
+              ? "Generating Image..."
+              : "Generate AI Image"}
+          </button>
         </div>
 
-        <button
-          onClick={onGeneratePosts}
-          disabled={loading || creditsLeft === 0}
-          className="w-full rounded-xl bg-pink-500 py-4 font-semibold hover:bg-pink-400 disabled:opacity-50"
-        >
-          {loading
-            ? "Generating..."
-            : creditsLeft === 0
-              ? "No credits left"
-              : "Generate Posts"}
-        </button>
-
-        <button
-          onClick={onGenerateImage}
-          disabled={imageLoading || !topic.trim()}
-          className="w-full rounded-xl border border-zinc-700 py-4 font-semibold hover:bg-zinc-800 disabled:opacity-50"
-        >
-          {imageLoading ? "Generating Image..." : "Generate AI Image"}
-        </button>
-
         {creditsLeft === 0 && !isPro && (
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm leading-6 text-zinc-400">
             You used all free credits. Upgrade to continue generating content.
           </p>
         )}
       </div>
+    </div>
+  );
+}
+
+function FormField({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label className="mb-2 block text-sm text-zinc-400">
+        {label}
+      </label>
+
+      {children}
     </div>
   );
 }
