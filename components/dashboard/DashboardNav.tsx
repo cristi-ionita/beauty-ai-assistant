@@ -12,7 +12,6 @@ export default function DashboardNav({ onLogout }: DashboardNavProps) {
         >
           <div className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-pink-500 via-fuchsia-500 to-purple-600 shadow-[0_0_35px_rgba(236,72,153,0.35)]">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.35),transparent_60%)]" />
-
             <span className="relative text-sm font-black text-white">B</span>
           </div>
 
@@ -27,31 +26,31 @@ export default function DashboardNav({ onLogout }: DashboardNavProps) {
           </div>
         </a>
 
-        <div className="flex min-w-0 items-center gap-1 overflow-x-auto sm:gap-2">
+        <div className="flex min-w-0 items-center gap-1 overflow-x-auto whitespace-nowrap [-ms-overflow-style:none] [scrollbar-width:none] sm:gap-2 [&::-webkit-scrollbar]:hidden">
           <a
             href="/generate"
-            className="shrink-0 rounded-xl px-3 py-2 text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-white sm:px-4"
+            className="shrink-0 rounded-xl px-3 py-2 text-xs font-medium text-zinc-300 transition hover:bg-zinc-900 hover:text-white sm:px-4 sm:text-sm"
           >
             Generate
           </a>
 
           <a
             href="/history"
-            className="shrink-0 rounded-xl px-3 py-2 text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-white sm:px-4"
+            className="shrink-0 rounded-xl px-3 py-2 text-xs font-medium text-zinc-300 transition hover:bg-zinc-900 hover:text-white sm:px-4 sm:text-sm"
           >
             History
           </a>
 
           <a
             href="/dashboard/billing"
-            className="shrink-0 rounded-xl px-3 py-2 text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-white sm:px-4"
+            className="shrink-0 rounded-xl px-3 py-2 text-xs font-medium text-zinc-300 transition hover:bg-zinc-900 hover:text-white sm:px-4 sm:text-sm"
           >
             Billing
           </a>
 
           <button
             onClick={onLogout}
-            className="shrink-0 rounded-xl border border-zinc-700 px-3 py-2 text-sm text-zinc-200 transition hover:bg-zinc-900 sm:px-4"
+            className="shrink-0 rounded-xl border border-zinc-700 px-3 py-2 text-xs font-medium text-zinc-200 transition hover:bg-zinc-900 sm:px-4 sm:text-sm"
           >
             Logout
           </button>

@@ -1,123 +1,102 @@
 export default function TermsPage() {
   return (
     <main className="min-h-screen bg-zinc-950 text-white">
-      <div className="mx-auto max-w-3xl px-6 py-20">
-        <a href="/" className="text-sm text-pink-300">
+      <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-20">
+        <a
+          href="/"
+          className="inline-flex items-center text-sm font-semibold text-pink-300 transition hover:text-pink-200"
+        >
           ← Back home
         </a>
 
-        <h1 className="mt-8 text-4xl font-bold">
-          Terms of Service
-        </h1>
+        <div className="mt-8 sm:mt-10">
+          <p className="text-xs uppercase tracking-[0.25em] text-pink-300 sm:text-sm">
+            Legal
+          </p>
 
-        <p className="mt-4 text-zinc-400">
-          Last updated: May 8, 2026
-        </p>
+          <h1 className="mt-3 text-3xl font-black leading-tight tracking-tight sm:text-5xl">
+            Terms of Service
+          </h1>
 
-        <div className="mt-10 space-y-8 leading-8 text-zinc-300">
-          <section>
-            <h2 className="text-2xl font-semibold text-white">
-              1. Acceptance of terms
-            </h2>
+          <p className="mt-4 text-sm text-zinc-500 sm:text-base">
+            Last updated: May 8, 2026
+          </p>
+        </div>
 
-            <p className="mt-3">
-              By using BusinessContent AI, you agree to these Terms of Service. If you do
-              not agree, do not use the platform.
-            </p>
-          </section>
+        <div className="mt-10 space-y-6 sm:space-y-8">
+          <TermsSection title="1. Acceptance of terms">
+            By using BusinessContent AI, you agree to these Terms of Service.
+            If you do not agree, do not use the platform.
+          </TermsSection>
 
-          <section>
-            <h2 className="text-2xl font-semibold text-white">
-              2. Service description
-            </h2>
+          <TermsSection title="2. Service description">
+            BusinessContent AI provides AI-generated marketing content and
+            image generation tools for beauty, local service and wellness
+            businesses.
+          </TermsSection>
 
-            <p className="mt-3">
-              BusinessContent AI provides AI-generated marketing content and image
-              generation tools for beauty and wellness businesses.
-            </p>
-          </section>
+          <TermsSection title="3. Accounts">
+            You are responsible for maintaining the security of your account
+            and any activity that occurs under your account.
+          </TermsSection>
 
-          <section>
-            <h2 className="text-2xl font-semibold text-white">
-              3. Accounts
-            </h2>
+          <TermsSection title="4. Subscription billing">
+            Paid subscriptions renew automatically unless canceled before the
+            next billing cycle. You may manage or cancel your subscription
+            through the billing portal.
+          </TermsSection>
 
-            <p className="mt-3">
-              You are responsible for maintaining the security of your account
-              and any activity that occurs under your account.
-            </p>
-          </section>
+          <TermsSection title="5. AI-generated content">
+            AI-generated content may contain inaccuracies or outputs similar
+            to content generated for other users. You are responsible for
+            reviewing all generated content before publishing or using it.
+          </TermsSection>
 
-          <section>
-            <h2 className="text-2xl font-semibold text-white">
-              4. Subscription billing
-            </h2>
+          <TermsSection title="6. Acceptable use">
+            You may not use the platform for illegal, abusive, misleading,
+            fraudulent, harmful, or infringing activities.
+          </TermsSection>
 
-            <p className="mt-3">
-              Paid subscriptions renew automatically unless canceled before the
-              next billing cycle. You may manage or cancel your subscription
-              through the billing portal.
-            </p>
-          </section>
+          <TermsSection title="7. Limitation of liability">
+            BusinessContent AI is provided "as is" without warranties of any
+            kind. We are not liable for indirect, incidental, or consequential
+            damages resulting from the use of the platform.
+          </TermsSection>
 
-          <section>
-            <h2 className="text-2xl font-semibold text-white">
-              5. AI-generated content
-            </h2>
+          <TermsSection title="8. Changes to the service">
+            We may modify, suspend, or discontinue parts of the service at
+            any time without prior notice.
+          </TermsSection>
 
-            <p className="mt-3">
-              AI-generated content may contain inaccuracies or outputs similar
-              to content generated for other users. You are responsible for
-              reviewing all generated content before publishing or using it.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold text-white">
-              6. Acceptable use
-            </h2>
-
-            <p className="mt-3">
-              You may not use the platform for illegal, abusive, misleading,
-              fraudulent, harmful, or infringing activities.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold text-white">
-              7. Limitation of liability
-            </h2>
-
-            <p className="mt-3">
-              BusinessContent AI is provided "as is" without warranties of any kind. We
-              are not liable for indirect, incidental, or consequential damages
-              resulting from the use of the platform.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold text-white">
-              8. Changes to the service
-            </h2>
-
-            <p className="mt-3">
-              We may modify, suspend, or discontinue parts of the service at any
-              time without prior notice.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold text-white">
-              9. Contact
-            </h2>
-
-            <p className="mt-3">
-              For questions regarding these terms, contact:
+          <TermsSection title="9. Contact">
+            For questions regarding these terms, contact:
+            <br />
+            <span className="text-pink-300">
               support@beautyai.app
-            </p>
-          </section>
+            </span>
+          </TermsSection>
         </div>
       </div>
     </main>
+  );
+}
+
+function TermsSection({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="rounded-3xl border border-zinc-800 bg-zinc-900 p-5 sm:p-7">
+      <h2 className="text-xl font-bold leading-tight text-white sm:text-2xl">
+        {title}
+      </h2>
+
+      <p className="mt-4 text-sm leading-7 text-zinc-300 sm:text-base sm:leading-8">
+        {children}
+      </p>
+    </section>
   );
 }

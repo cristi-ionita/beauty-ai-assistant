@@ -154,25 +154,28 @@ export default function HistoryPage() {
     <main className="min-h-screen bg-zinc-950 text-white">
       <DashboardNav onLogout={logout} />
 
-      <div className="mx-auto max-w-6xl px-6 py-10">
-        <div className="mb-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
+        <div className="mb-8 flex flex-col gap-5 lg:mb-10 lg:flex-row lg:items-end lg:justify-between">
           <div>
+            <p className="text-xs uppercase tracking-[0.25em] text-pink-300 sm:text-sm">
+              Content Library
+            </p>
 
-            <h1 className="mt-4 text-4xl font-bold">Your History</h1>
+            <h1 className="mt-3 text-3xl font-black leading-tight tracking-tight sm:text-4xl">
+              Your History
+            </h1>
 
-            <p className="mt-3 text-zinc-400">
-              Search, copy, download, and reuse your generated posts and images.
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400 sm:text-base sm:leading-7">
+              Search, copy, download and reuse your generated posts and images.
             </p>
           </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="flex w-full flex-col gap-3 sm:flex-row lg:w-auto">
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={
-                activeTab === "posts"
-                  ? "Search posts..."
-                  : "Search images..."
+                activeTab === "posts" ? "Search posts..." : "Search images..."
               }
               className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm outline-none transition focus:border-pink-500 sm:w-72"
             />
@@ -180,7 +183,7 @@ export default function HistoryPage() {
             {activeTab === "posts" && filteredPosts.length > 0 && (
               <button
                 onClick={copyAllFilteredPosts}
-                className="rounded-xl border border-zinc-700 px-5 py-3 text-sm transition hover:bg-zinc-900"
+                className="w-full rounded-xl border border-zinc-700 px-5 py-3 text-sm font-semibold transition hover:bg-zinc-900 sm:w-auto"
               >
                 Copy Results
               </button>
@@ -188,11 +191,11 @@ export default function HistoryPage() {
           </div>
         </div>
 
-        <div className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-zinc-800 bg-zinc-900 p-3">
-          <div className="flex gap-2">
+        <div className="mb-6 flex flex-col gap-3 rounded-3xl border border-zinc-800 bg-zinc-900 p-3 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
+          <div className="grid grid-cols-2 gap-2 sm:flex">
             <button
               onClick={() => setActiveTab("posts")}
-              className={`rounded-2xl px-5 py-3 text-sm font-semibold transition ${
+              className={`rounded-2xl px-4 py-3 text-sm font-semibold transition sm:px-5 ${
                 activeTab === "posts"
                   ? "bg-pink-500 text-white"
                   : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
@@ -203,7 +206,7 @@ export default function HistoryPage() {
 
             <button
               onClick={() => setActiveTab("images")}
-              className={`rounded-2xl px-5 py-3 text-sm font-semibold transition ${
+              className={`rounded-2xl px-4 py-3 text-sm font-semibold transition sm:px-5 ${
                 activeTab === "images"
                   ? "bg-pink-500 text-white"
                   : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
@@ -213,12 +216,12 @@ export default function HistoryPage() {
             </button>
           </div>
 
-          <span className="pr-3 text-sm text-zinc-500">
+          <span className="px-2 text-sm text-zinc-500 sm:pr-3">
             {visibleCount} result{visibleCount === 1 ? "" : "s"}
           </span>
         </div>
 
-        {loading && <div className="text-zinc-500">Loading...</div>}
+        {loading && <div className="text-sm text-zinc-500">Loading...</div>}
 
         {!loading && activeTab === "posts" && posts.length === 0 && (
           <EmptyState text="No generated posts yet." />
@@ -243,19 +246,21 @@ export default function HistoryPage() {
           )}
 
         {!loading && activeTab === "posts" && filteredPosts.length > 0 && (
-          <div className="space-y-6">
+          <div className="space-y-5 sm:space-y-6">
             {filteredPosts.map((post) => (
               <div
                 key={post.id}
-                className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6"
+                className="rounded-3xl border border-zinc-800 bg-zinc-900 p-4 sm:p-6"
               >
-                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex flex-wrap gap-3 text-sm text-zinc-500">
+                <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex flex-wrap gap-2 text-xs text-zinc-500 sm:gap-3 sm:text-sm">
                     <span>{post.business_type}</span>
                     <span>•</span>
                     <span>{post.language}</span>
                     <span>•</span>
-                    <span>{post.topic}</span>
+                    <span className="max-w-full break-words">
+                      {post.topic}
+                    </span>
                     <span>•</span>
                     <span>
                       {new Date(post.created_at).toLocaleDateString()}
@@ -264,32 +269,30 @@ export default function HistoryPage() {
 
                   <button
                     onClick={() => copyPost(post)}
-                    className="rounded-lg border border-zinc-700 px-4 py-2 text-sm transition hover:bg-zinc-800"
+                    className="w-full rounded-xl border border-zinc-700 px-4 py-3 text-sm font-semibold transition hover:bg-zinc-800 sm:w-auto sm:py-2"
                   >
                     Copy
                   </button>
                 </div>
 
                 <div className="space-y-5">
-                  <div>
-                    <p className="mb-2 text-sm text-zinc-500">Caption</p>
-
-                    <p className="whitespace-pre-wrap leading-8 text-zinc-300">
+                  <HistorySection label="Caption">
+                    <p className="whitespace-pre-wrap text-sm leading-7 text-zinc-300 sm:text-base sm:leading-8">
                       {post.caption}
                     </p>
-                  </div>
+                  </HistorySection>
 
-                  <div>
-                    <p className="mb-2 text-sm text-zinc-500">Hashtags</p>
+                  <HistorySection label="Hashtags">
+                    <p className="break-words text-sm leading-7 text-pink-300 sm:text-base">
+                      {post.hashtags}
+                    </p>
+                  </HistorySection>
 
-                    <p className="text-pink-300">{post.hashtags}</p>
-                  </div>
-
-                  <div>
-                    <p className="mb-2 text-sm text-zinc-500">CTA</p>
-
-                    <p className="text-zinc-300">{post.cta}</p>
-                  </div>
+                  <HistorySection label="CTA">
+                    <p className="text-sm leading-7 text-zinc-300 sm:text-base">
+                      {post.cta}
+                    </p>
+                  </HistorySection>
                 </div>
               </div>
             ))}
@@ -297,7 +300,7 @@ export default function HistoryPage() {
         )}
 
         {!loading && activeTab === "images" && filteredImages.length > 0 && (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
             {filteredImages.map((image) => (
               <ImageCard key={image.id} image={image} />
             ))}
@@ -310,8 +313,26 @@ export default function HistoryPage() {
 
 function EmptyState({ text }: { text: string }) {
   return (
-    <div className="rounded-3xl border border-dashed border-zinc-800 bg-zinc-900 p-10 text-center text-zinc-500">
+    <div className="rounded-3xl border border-dashed border-zinc-800 bg-zinc-900 p-8 text-center text-sm text-zinc-500 sm:p-10">
       {text}
+    </div>
+  );
+}
+
+function HistorySection({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <p className="mb-2 text-xs uppercase tracking-[0.2em] text-zinc-500">
+        {label}
+      </p>
+
+      {children}
     </div>
   );
 }

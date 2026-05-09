@@ -2,6 +2,7 @@
 
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
+import type { GeneratedPost } from "@/types/dashboard";
 
 type DashboardActionsProps = {
   businessType: string;
@@ -20,7 +21,7 @@ type DashboardActionsProps = {
   setLoading: (value: boolean) => void;
   setImageLoading: (value: boolean) => void;
 
-  setPosts: (value: any[]) => void;
+  setPosts: (value: GeneratedPost[]) => void;
   setGeneratedImage: (value: string | null) => void;
 
   setCreditsLeft: (value: number | null) => void;
@@ -36,136 +37,20 @@ type DashboardActionsProps = {
   getCurrentUserOrRedirect: () => Promise<any>;
 };
 
-export function useDashboardActions({
+function buildPremiumImagePrompt({
   businessType,
   topic,
-  language,
   platform,
   tone,
   goal,
-  postCount,
-
-  creditsLeft,
-  imageCreditsLeft,
-
-  stripeCustomerId,
-
-  setLoading,
-  setImageLoading,
-
-  setPosts,
-  setGeneratedImage,
-
-  setCreditsLeft,
-  setImageCreditsLeft,
-  setPlan,
-
-  setShowUpgradeModal,
-
-  setImageHistoryVersion,
-
-  getCurrentUserOrRedirect,
-}: DashboardActionsProps) {
-  async function generatePosts() {
-    if (!topic.trim()) {
-      toast.error(
-        "Please enter a topic, promotion, service, offer or campaign idea first"
-      );
-
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      const user = await getCurrentUserOrRedirect();
-
-      if (!user) return;
-
-      const response = await fetch("/api/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          businessType,
-          topic,
-          language,
-          platform,
-          tone,
-          goal,
-          postCount,
-          userId: user.id,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        if (data.error === "No credits left") {
-          setShowUpgradeModal(true);
-        } else {
-          toast.error(data.error || "AI generation failed");
-        }
-
-        return;
-      }
-
-      setPosts(data.result);
-
-      toast.success("Posts generated successfully");
-
-      if (data.creditsLeft !== undefined) {
-        setCreditsLeft(data.creditsLeft);
-      }
-
-      if (data.imageCreditsLeft !== undefined) {
-        setImageCreditsLeft(data.imageCreditsLeft);
-      }
-
-      if (data.plan) {
-        setPlan(data.plan);
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function generateImage() {
-    if (!topic.trim()) {
-      toast.error("Please enter a topic before generating an image");
-      return;
-    }
-
-    if (imageCreditsLeft !== null && imageCreditsLeft <= 0) {
-      setShowUpgradeModal(true);
-      return;
-    }
-
-    try {
-      setImageLoading(true);
-
-      const user = await getCurrentUserOrRedirect();
-
-      if (!user) return;
-
-      const response = await fetch("/api/generate-image", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: user.id,
-          businessType,
-          topic,
-          platform,
-          tone,
-          goal,
-
-          prompt: `
+}: {
+  businessType: string;
+  topic: string;
+  platform: string;
+  tone: string;
+  goal: string;
+}) {
+  return `
 You are a world-class advertising creative director.
 
 Create a premium square social media advertisement image for a ${businessType}.
@@ -189,6 +74,13 @@ IMPORTANT:
 Do NOT copy the user text directly onto the image.
 Do NOT create posters with large blocks of text.
 Instead, transform the idea into a visually powerful marketing concept.
+
+Creative direction:
+- surprise the user with a stronger visual concept than their raw prompt
+- turn the business idea into a polished campaign visual
+- make the image feel strategic, premium and emotionally desirable
+- create a clear commercial mood that fits the business category
+- make it look like a professional agency-level ad creative
 
 The image must:
 - feel premium and cinematic
@@ -234,36 +126,195 @@ Avoid:
 - watermarks
 
 The final result should look like a €10,000 professional advertising campaign.
-`,
+`;
+}
+
+async function safeJson(response: Response) {
+  try {
+    return await response.json();
+  } catch {
+    return {};
+  }
+}
+
+export function useDashboardActions({
+  businessType,
+  topic,
+  language,
+  platform,
+  tone,
+  goal,
+  postCount,
+
+  creditsLeft,
+  imageCreditsLeft,
+
+  stripeCustomerId,
+
+  setLoading,
+  setImageLoading,
+
+  setPosts,
+  setGeneratedImage,
+
+  setCreditsLeft,
+  setImageCreditsLeft,
+  setPlan,
+
+  setShowUpgradeModal,
+
+  setImageHistoryVersion,
+
+  getCurrentUserOrRedirect,
+}: DashboardActionsProps) {
+  async function generatePosts() {
+    const cleanTopic = topic.trim();
+
+    if (!cleanTopic) {
+      toast.error(
+        "Please enter a topic, promotion, service, offer or campaign idea first."
+      );
+
+      return;
+    }
+
+    if (creditsLeft !== null && creditsLeft <= 0) {
+      setShowUpgradeModal(true);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setGeneratedImage(null);
+
+      const user = await getCurrentUserOrRedirect();
+
+      if (!user) return;
+
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          businessType,
+          topic: cleanTopic,
+          language,
+          platform,
+          tone,
+          goal,
+          postCount,
+          userId: user.id,
         }),
       });
 
-      const data = await response.json();
+      const data = await safeJson(response);
 
       if (!response.ok) {
-        if (data.error === "No image credits left") {
+        if (data.error === "No credits left") {
           setShowUpgradeModal(true);
         } else {
-          toast.error(data.error || "Image generation failed");
+          toast.error(data.error || "AI generation failed.");
         }
 
         return;
       }
 
-      setGeneratedImage(data.image);
+      setPosts(data.result || []);
 
+      toast.success("Posts generated successfully.");
+
+      if (data.creditsLeft !== undefined) {
+        setCreditsLeft(data.creditsLeft);
+      }
+
+      if (data.imageCreditsLeft !== undefined) {
+        setImageCreditsLeft(data.imageCreditsLeft);
+      }
+
+      if (data.plan) {
+        setPlan(data.plan);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong while generating posts.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function generateImage() {
+    const cleanTopic = topic.trim();
+
+    if (!cleanTopic) {
+      toast.error("Please enter a topic before generating an image.");
+      return;
+    }
+
+    if (imageCreditsLeft !== null && imageCreditsLeft <= 0) {
+      setShowUpgradeModal(true);
+      return;
+    }
+
+    try {
+      setImageLoading(true);
+
+      const user = await getCurrentUserOrRedirect();
+
+      if (!user) return;
+
+      const response = await fetch("/api/generate-image", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          businessType,
+          topic: cleanTopic,
+          platform,
+          tone,
+          goal,
+          prompt: buildPremiumImagePrompt({
+            businessType,
+            topic: cleanTopic,
+            platform,
+            tone,
+            goal,
+          }),
+        }),
+      });
+
+      const data = await safeJson(response);
+
+      if (!response.ok) {
+        if (data.error === "No image credits left") {
+          setShowUpgradeModal(true);
+        } else {
+          toast.error(data.error || "Image generation failed.");
+        }
+
+        return;
+      }
+
+      if (!data.image) {
+        toast.error("Image generation failed.");
+        return;
+      }
+
+      setGeneratedImage(data.image);
       setImageHistoryVersion((current) => current + 1);
 
       if (data.imageCreditsLeft !== undefined) {
         setImageCreditsLeft(data.imageCreditsLeft);
       } else if (imageCreditsLeft !== null) {
-        setImageCreditsLeft(imageCreditsLeft - 1);
+        setImageCreditsLeft(Math.max(imageCreditsLeft - 1, 0));
       }
 
-      toast.success("Image generated successfully");
+      toast.success("Image generated successfully.");
     } catch (error) {
       console.error(error);
-      toast.error("Image generation failed");
+      toast.error("Image generation failed.");
     } finally {
       setImageLoading(false);
     }
@@ -278,6 +329,8 @@ The final result should look like a €10,000 professional advertising campaign.
         return;
       }
 
+      toast.loading("Opening secure checkout...");
+
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: {
@@ -290,16 +343,19 @@ The final result should look like a €10,000 professional advertising campaign.
         }),
       });
 
-      const data = await response.json();
+      const data = await safeJson(response);
+
+      toast.dismiss();
 
       if (data.url) {
         window.location.href = data.url;
       } else {
-        toast.error(data.error || "Checkout failed");
+        toast.error(data.error || "Checkout failed.");
       }
     } catch (error) {
       console.error(error);
-      toast.error("Stripe checkout failed");
+      toast.dismiss();
+      toast.error("Stripe checkout failed.");
     }
   }
 
@@ -311,6 +367,8 @@ The final result should look like a €10,000 professional advertising campaign.
         window.location.replace("/login");
         return;
       }
+
+      toast.loading("Opening billing portal...");
 
       const response = await fetch("/api/portal", {
         method: "POST",
@@ -324,16 +382,19 @@ The final result should look like a €10,000 professional advertising campaign.
         }),
       });
 
-      const data = await response.json();
+      const data = await safeJson(response);
+
+      toast.dismiss();
 
       if (data.url) {
         window.location.href = data.url;
       } else {
-        toast.error(data.error || "Portal failed");
+        toast.error(data.error || "Billing portal failed.");
       }
     } catch (error) {
       console.error(error);
-      toast.error("Stripe portal failed");
+      toast.dismiss();
+      toast.error("Stripe portal failed.");
     }
   }
 

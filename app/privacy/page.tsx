@@ -1,94 +1,96 @@
 export default function PrivacyPage() {
   return (
     <main className="min-h-screen bg-zinc-950 text-white">
-      <div className="mx-auto max-w-3xl px-6 py-20">
-        <a href="/" className="text-sm text-pink-300">
+      <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-20">
+        <a
+          href="/"
+          className="inline-flex items-center text-sm font-semibold text-pink-300 transition hover:text-pink-200"
+        >
           ← Back home
         </a>
 
-        <h1 className="mt-8 text-4xl font-bold">Privacy Policy</h1>
+        <div className="mt-8 sm:mt-10">
+          <p className="text-xs uppercase tracking-[0.25em] text-pink-300 sm:text-sm">
+            Legal
+          </p>
 
-        <p className="mt-4 text-zinc-400">Last updated: May 8, 2026</p>
+          <h1 className="mt-3 text-3xl font-black leading-tight tracking-tight sm:text-5xl">
+            Privacy Policy
+          </h1>
 
-        <div className="mt-10 space-y-8 leading-8 text-zinc-300">
-          <section>
-            <h2 className="text-2xl font-semibold text-white">
-              1. Information we collect
-            </h2>
-            <p className="mt-3">
-              We collect information you provide when creating an account, using
-              the app, generating content, and managing your subscription. This
-              may include your email address, generated content, account status,
-              usage data, and subscription information.
-            </p>
-          </section>
+          <p className="mt-4 text-sm text-zinc-500 sm:text-base">
+            Last updated: May 8, 2026
+          </p>
+        </div>
 
-          <section>
-            <h2 className="text-2xl font-semibold text-white">
-              2. How we use your information
-            </h2>
-            <p className="mt-3">
-              We use your information to provide the service, generate AI
-              content, manage credits, process subscriptions, improve the
-              product, prevent abuse, and communicate important account updates.
-            </p>
-          </section>
+        <div className="mt-10 space-y-6 sm:space-y-8">
+          <PolicySection title="1. Information we collect">
+            We collect information you provide when creating an account, using
+            the app, generating content, and managing your subscription. This
+            may include your email address, generated content, account status,
+            usage data, and subscription information.
+          </PolicySection>
 
-          <section>
-            <h2 className="text-2xl font-semibold text-white">
-              3. Payments
-            </h2>
-            <p className="mt-3">
-              Payments are processed by Stripe. We do not store your full card
-              details. Stripe may collect and process payment information
-              according to its own privacy policy.
-            </p>
-          </section>
+          <PolicySection title="2. How we use your information">
+            We use your information to provide the service, generate AI content,
+            manage credits, process subscriptions, improve the product, prevent
+            abuse, and communicate important account updates.
+          </PolicySection>
 
-          <section>
-            <h2 className="text-2xl font-semibold text-white">
-              4. AI-generated content
-            </h2>
-            <p className="mt-3">
-              Prompts and generated outputs may be processed by AI providers to
-              deliver the service. Do not submit sensitive personal data,
-              confidential business information, or content you do not have the
-              right to use.
-            </p>
-          </section>
+          <PolicySection title="3. Payments">
+            Payments are processed by Stripe. We do not store your full card
+            details. Stripe may collect and process payment information
+            according to its own privacy policy.
+          </PolicySection>
 
-          <section>
-            <h2 className="text-2xl font-semibold text-white">
-              5. Data storage
-            </h2>
-            <p className="mt-3">
-              We store account data, generated content, usage data, and credit
-              balances in our database provider. We use reasonable safeguards to
-              protect your information.
-            </p>
-          </section>
+          <PolicySection title="4. AI-generated content">
+            Prompts and generated outputs may be processed by AI providers to
+            deliver the service. Do not submit sensitive personal data,
+            confidential business information, or content you do not have the
+            right to use.
+          </PolicySection>
 
-          <section>
-            <h2 className="text-2xl font-semibold text-white">
-              6. Your rights
-            </h2>
-            <p className="mt-3">
-              You may request access, correction, or deletion of your personal
-              information by contacting us. Some data may be retained where
-              required for legal, security, or billing purposes.
-            </p>
-          </section>
+          <PolicySection title="5. Data storage">
+            We store account data, generated content, usage data, and credit
+            balances in our database provider. We use reasonable safeguards to
+            protect your information.
+          </PolicySection>
 
-          <section>
-            <h2 className="text-2xl font-semibold text-white">
-              7. Contact
-            </h2>
-            <p className="mt-3">
-              For privacy questions, contact us at: support@beautyai.app
-            </p>
-          </section>
+          <PolicySection title="6. Your rights">
+            You may request access, correction, or deletion of your personal
+            information by contacting us. Some data may be retained where
+            required for legal, security, or billing purposes.
+          </PolicySection>
+
+          <PolicySection title="7. Contact">
+            For privacy questions, contact us at:
+            <br />
+            <span className="text-pink-300">
+              support@beautyai.app
+            </span>
+          </PolicySection>
         </div>
       </div>
     </main>
+  );
+}
+
+function PolicySection({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="rounded-3xl border border-zinc-800 bg-zinc-900 p-5 sm:p-7">
+      <h2 className="text-xl font-bold leading-tight text-white sm:text-2xl">
+        {title}
+      </h2>
+
+      <p className="mt-4 text-sm leading-7 text-zinc-300 sm:text-base sm:leading-8">
+        {children}
+      </p>
+    </section>
   );
 }

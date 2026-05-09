@@ -31,13 +31,17 @@ export default function DashboardHeader({
         <div className="relative">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div>
-              <h1 className="max-w-3xl text-3xl font-black leading-tight tracking-tight sm:text-4xl md:text-5xl">
-                Content Generator
+              <p className="text-xs uppercase tracking-[0.25em] text-pink-300 sm:text-sm">
+                Subscription
+              </p>
+
+              <h1 className="mt-3 max-w-3xl text-3xl font-black leading-tight tracking-tight sm:text-4xl md:text-5xl">
+                Plans & Access
               </h1>
 
               <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8">
-                Generate premium social media posts, captions, campaigns and AI
-                visuals for local businesses, creators and service brands.
+                Upgrade your workspace to unlock more creative output, premium
+                workflows and higher-volume AI image generation.
               </p>
             </div>
 

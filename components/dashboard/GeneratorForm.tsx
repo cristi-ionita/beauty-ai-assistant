@@ -54,6 +54,57 @@ const businessTypes = [
   "Personal Brand",
 ];
 
+const languages = [
+  "English",
+  "Spanish",
+  "French",
+  "German",
+  "Italian",
+  "Portuguese",
+  "Romanian",
+  "Dutch",
+  "Polish",
+  "Turkish",
+  "Arabic",
+];
+
+const platforms = [
+  "Instagram",
+  "Facebook",
+  "TikTok",
+  "LinkedIn",
+  "Google Business Profile",
+];
+
+const tones = [
+  "Friendly",
+  "Professional",
+  "Luxury",
+  "Bold",
+  "Funny",
+  "Elegant",
+  "Warm",
+  "Trustworthy",
+  "Premium",
+  "Casual",
+  "Local",
+];
+
+const goals = [
+  "Get bookings",
+  "Promote offer",
+  "Educate clients",
+  "Announce service",
+  "Increase engagement",
+  "Sell gift cards",
+  "Win back old clients",
+  "Get more calls",
+  "Drive website visits",
+  "Promote new product",
+  "Build local trust",
+  "Generate leads",
+];
+
 export default function GeneratorForm({
   businessType,
   setBusinessType,
@@ -76,167 +127,159 @@ export default function GeneratorForm({
   onGeneratePosts,
   onGenerateImage,
 }: GeneratorFormProps) {
+  const hasNoCredits = creditsLeft === 0;
+
   return (
-    <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-4 sm:p-6">
-      <div className="mb-5 sm:mb-6">
-        <h2 className="text-xl font-bold sm:text-2xl">
-          Generate content
-        </h2>
+    <div className="relative overflow-hidden rounded-[2rem] border border-zinc-800 bg-zinc-900 p-4 shadow-2xl sm:p-6">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(236,72,153,0.16),transparent_35%)]" />
 
-        <p className="mt-2 text-sm leading-6 text-zinc-500">
-          Choose your business, goal and campaign idea.
-        </p>
-      </div>
+      <div className="relative">
+        <div className="mb-6">
+          <p className="text-xs uppercase tracking-[0.25em] text-pink-300">
+            AI Generator
+          </p>
 
-      <div className="space-y-4 sm:space-y-5">
-        <FormField label="Business Type">
-          <select
-            value={businessType}
-            onChange={(e) => setBusinessType(e.target.value)}
-            className="field-input"
-          >
-            {businessTypes.map((type) => (
-              <option key={type}>{type}</option>
-            ))}
-          </select>
-        </FormField>
+          <h2 className="mt-3 text-2xl font-black leading-tight text-white sm:text-3xl">
+            Create content
+          </h2>
 
-        <FormField label="Language">
-          <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-            className="field-input"
-          >
-            <option>English</option>
-            <option>Spanish</option>
-            <option>French</option>
-            <option>German</option>
-            <option>Italian</option>
-            <option>Portuguese</option>
-            <option>Romanian</option>
-            <option>Dutch</option>
-            <option>Polish</option>
-            <option>Turkish</option>
-            <option>Arabic</option>
-          </select>
-        </FormField>
-
-        <FormField label="Platform">
-          <select
-            value={platform}
-            onChange={(e) => setPlatform(e.target.value)}
-            className="field-input"
-          >
-            <option>Instagram</option>
-            <option>Facebook</option>
-            <option>TikTok</option>
-            <option>LinkedIn</option>
-            <option>Google Business Profile</option>
-          </select>
-        </FormField>
-
-        <FormField label="Tone">
-          <select
-            value={tone}
-            onChange={(e) => setTone(e.target.value)}
-            className="field-input"
-          >
-            <option>Friendly</option>
-            <option>Professional</option>
-            <option>Luxury</option>
-            <option>Bold</option>
-            <option>Funny</option>
-            <option>Elegant</option>
-            <option>Warm</option>
-            <option>Trustworthy</option>
-            <option>Premium</option>
-            <option>Casual</option>
-            <option>Local</option>
-          </select>
-        </FormField>
-
-        <FormField label="Goal">
-          <select
-            value={goal}
-            onChange={(e) => setGoal(e.target.value)}
-            className="field-input"
-          >
-            <option>Get bookings</option>
-            <option>Promote offer</option>
-            <option>Educate clients</option>
-            <option>Announce service</option>
-            <option>Increase engagement</option>
-            <option>Sell gift cards</option>
-            <option>Win back old clients</option>
-            <option>Get more calls</option>
-            <option>Drive website visits</option>
-            <option>Promote new product</option>
-            <option>Build local trust</option>
-            <option>Generate leads</option>
-          </select>
-        </FormField>
-
-        <FormField label="Number of posts">
-          <select
-            value={postCount}
-            onChange={(e) => setPostCount(Number(e.target.value))}
-            className="field-input"
-          >
-            <option value={3}>3 Posts</option>
-
-            {isPro && (
-              <>
-                <option value={5}>5 Posts</option>
-                <option value={10}>10 Posts</option>
-              </>
-            )}
-          </select>
-
-          {!isPro && (
-            <p className="mt-2 text-xs leading-5 text-zinc-500">
-              Upgrade to Normal or Pro for 5 and 10 post generations.
-            </p>
-          )}
-        </FormField>
-
-        <FormField label="Topic / Promotion">
-          <textarea
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            placeholder="Example: weekend offer, new service, lunch special, client testimonial, seasonal campaign..."
-            className="min-h-[120px] w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm outline-none transition focus:border-pink-500 sm:min-h-[130px]"
-          />
-        </FormField>
-
-        <div className="grid gap-3">
-          <button
-            onClick={onGeneratePosts}
-            disabled={loading || creditsLeft === 0}
-            className="w-full rounded-xl bg-pink-500 py-4 text-sm font-bold transition hover:bg-pink-400 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {loading
-              ? "Generating..."
-              : creditsLeft === 0
-                ? "No credits left"
-                : "Generate Posts"}
-          </button>
-
-          <button
-            onClick={onGenerateImage}
-            disabled={imageLoading || !topic.trim()}
-            className="w-full rounded-xl border border-zinc-700 py-4 text-sm font-bold transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {imageLoading
-              ? "Generating Image..."
-              : "Generate AI Image"}
-          </button>
+          <p className="mt-3 text-sm leading-6 text-zinc-400">
+            Select your business, platform and campaign direction.
+          </p>
         </div>
 
-        {creditsLeft === 0 && !isPro && (
-          <p className="text-sm leading-6 text-zinc-400">
-            You used all free credits. Upgrade to continue generating content.
-          </p>
-        )}
+        <div className="space-y-4 sm:space-y-5">
+          <FormField label="Business Type">
+            <select
+              value={businessType}
+              onChange={(e) => setBusinessType(e.target.value)}
+              className="field-input"
+            >
+              {businessTypes.map((type) => (
+                <option key={type}>{type}</option>
+              ))}
+            </select>
+          </FormField>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FormField label="Language">
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                className="field-input"
+              >
+                {languages.map((item) => (
+                  <option key={item}>{item}</option>
+                ))}
+              </select>
+            </FormField>
+
+            <FormField label="Platform">
+              <select
+                value={platform}
+                onChange={(e) => setPlatform(e.target.value)}
+                className="field-input"
+              >
+                {platforms.map((item) => (
+                  <option key={item}>{item}</option>
+                ))}
+              </select>
+            </FormField>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FormField label="Tone">
+              <select
+                value={tone}
+                onChange={(e) => setTone(e.target.value)}
+                className="field-input"
+              >
+                {tones.map((item) => (
+                  <option key={item}>{item}</option>
+                ))}
+              </select>
+            </FormField>
+
+            <FormField label="Goal">
+              <select
+                value={goal}
+                onChange={(e) => setGoal(e.target.value)}
+                className="field-input"
+              >
+                {goals.map((item) => (
+                  <option key={item}>{item}</option>
+                ))}
+              </select>
+            </FormField>
+          </div>
+
+          <FormField label="Number of posts">
+            <select
+              value={postCount}
+              onChange={(e) => setPostCount(Number(e.target.value))}
+              className="field-input"
+            >
+              <option value={3}>3 Posts</option>
+
+              {isPro && (
+                <>
+                  <option value={5}>5 Posts</option>
+                  <option value={10}>10 Posts</option>
+                </>
+              )}
+            </select>
+
+            {!isPro && (
+              <div className="mt-3 rounded-2xl border border-zinc-800 bg-zinc-950/70 px-4 py-3">
+                <p className="text-xs leading-5 text-zinc-500">
+                  Upgrade to Normal or Pro for larger 5 and 10 post batches.
+                </p>
+              </div>
+            )}
+          </FormField>
+
+          <FormField label="Topic / Promotion">
+            <textarea
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              placeholder="Example: weekend offer, new service, lunch special, client testimonial, seasonal campaign..."
+              className="min-h-[120px] w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm text-white outline-none transition placeholder:text-zinc-600 focus:border-pink-500 sm:min-h-[140px]"
+            />
+          </FormField>
+
+          <div className="grid gap-3 pt-1">
+            <button
+              onClick={onGeneratePosts}
+              disabled={loading || hasNoCredits}
+              className="group relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-pink-500 via-fuchsia-500 to-purple-600 px-5 py-4 text-sm font-black text-white shadow-[0_0_35px_rgba(236,72,153,0.28)] transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <span className="relative">
+                {loading
+                  ? "Generating posts..."
+                  : hasNoCredits
+                    ? "No credits left"
+                    : "Generate Posts"}
+              </span>
+            </button>
+
+            <button
+              onClick={onGenerateImage}
+              disabled={imageLoading || !topic.trim()}
+              className="w-full rounded-2xl border border-zinc-700 bg-zinc-950 px-5 py-4 text-sm font-black text-zinc-100 transition hover:border-pink-500/40 hover:bg-zinc-900 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {imageLoading ? "Generating image..." : "Generate AI Image"}
+            </button>
+          </div>
+
+          {hasNoCredits && !isPro && (
+            <div className="rounded-2xl border border-pink-500/20 bg-pink-500/10 px-4 py-3">
+              <p className="text-sm leading-6 text-pink-200">
+                You used all free credits. Upgrade to continue generating
+                content.
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -251,7 +294,7 @@ function FormField({
 }) {
   return (
     <div>
-      <label className="mb-2 block text-sm text-zinc-400">
+      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500">
         {label}
       </label>
 

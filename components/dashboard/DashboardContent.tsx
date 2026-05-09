@@ -82,7 +82,11 @@ export default function DashboardContent({
           <div className="relative">
             <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <h1 className="max-w-3xl text-3xl font-black leading-tight tracking-tight sm:text-4xl md:text-5xl">
+                <p className="text-xs uppercase tracking-[0.25em] text-pink-300 sm:text-sm">
+                  Dashboard
+                </p>
+
+                <h1 className="mt-3 max-w-3xl text-3xl font-black leading-tight tracking-tight sm:text-4xl md:text-5xl">
                   Content Generator
                 </h1>
 
@@ -152,11 +156,11 @@ function MetricCard({
   highlight?: boolean;
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 px-5 py-4">
+    <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 px-4 py-4 sm:px-5">
       <p className="text-xs text-zinc-500">{label}</p>
 
       <p
-        className={`mt-1 font-bold capitalize ${
+        className={`mt-1 text-sm font-bold capitalize sm:text-base ${
           highlight ? "text-pink-300" : "text-white"
         }`}
       >

@@ -1,5 +1,7 @@
 "use client";
 
+import { useMemo } from "react";
+
 import { useDashboardState } from "@/hooks/dashboard/useDashboardState";
 import { useDashboardAuth } from "@/hooks/dashboard/useDashboardAuth";
 import { useDashboardActions } from "@/hooks/dashboard/useDashboardActions";
@@ -45,8 +47,11 @@ export function useDashboard() {
     getCurrentUserOrRedirect,
   });
 
-  return {
-    ...state,
-    ...actions,
-  };
+  return useMemo(
+    () => ({
+      ...state,
+      ...actions,
+    }),
+    [state, actions]
+  );
 }
