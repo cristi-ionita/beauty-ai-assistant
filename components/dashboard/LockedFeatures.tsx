@@ -39,7 +39,7 @@ export default function LockedFeatures({ isPaid }: LockedFeaturesProps) {
       </h2>
 
       <p className="mt-3 text-sm leading-7 text-zinc-400">
-        Upgrade to turn Beauty AI into a full marketing assistant for your
+        Upgrade to turn BusinessContent AI into a full marketing assistant for your
         salon, studio or agency.
       </p>
 

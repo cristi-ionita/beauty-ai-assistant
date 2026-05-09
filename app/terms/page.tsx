@@ -21,7 +21,7 @@ export default function TermsPage() {
             </h2>
 
             <p className="mt-3">
-              By using Beauty AI, you agree to these Terms of Service. If you do
+              By using BusinessContent AI, you agree to these Terms of Service. If you do
               not agree, do not use the platform.
             </p>
           </section>
@@ -32,7 +32,7 @@ export default function TermsPage() {
             </h2>
 
             <p className="mt-3">
-              Beauty AI provides AI-generated marketing content and image
+              BusinessContent AI provides AI-generated marketing content and image
               generation tools for beauty and wellness businesses.
             </p>
           </section>
@@ -89,7 +89,7 @@ export default function TermsPage() {
             </h2>
 
             <p className="mt-3">
-              Beauty AI is provided "as is" without warranties of any kind. We
+              BusinessContent AI is provided "as is" without warranties of any kind. We
               are not liable for indirect, incidental, or consequential damages
               resulting from the use of the platform.
             </p>

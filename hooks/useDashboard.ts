@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 import type { GeneratedPost } from "@/types/dashboard";
 
 export function useDashboard() {
-  const [businessType, setBusinessType] = useState("Barbershop");
+  const [businessType, setBusinessType] = useState("Restaurant");
   const [topic, setTopic] = useState("");
   const [language, setLanguage] = useState("English");
   const [platform, setPlatform] = useState("Instagram");
@@ -113,7 +113,7 @@ export function useDashboard() {
 
   async function generatePosts() {
     if (!topic.trim()) {
-      toast.error("Please enter a topic or promotion first");
+      toast.error("Please enter a topic, promotion, service, offer or campaign idea first");
       return;
     }
 
@@ -204,7 +204,10 @@ export function useDashboard() {
           prompt: `
 Create a premium square social media marketing image for a ${businessType}.
 
-Topic:
+Business type:
+${businessType}
+
+Topic / promotion / campaign:
 ${topic}
 
 Platform:
@@ -217,7 +220,7 @@ Goal:
 ${goal}
 
 Visual direction:
-modern beauty industry aesthetic, premium lighting, clean composition, elegant colors, professional advertising image, no unreadable text, no distorted faces, high quality, suitable for social media.
+professional local business advertising image, clean composition, premium lighting, modern commercial style, high quality, platform-ready social media creative, relevant to the selected business type, no unreadable text, no distorted faces, no logos, no watermarks.
 `,
         }),
       });

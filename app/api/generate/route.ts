@@ -87,12 +87,12 @@ export async function POST(req: Request) {
       : Math.min(Number(postCount) || 3, 3);
 
     const prompt = `
-You are an expert social media strategist and copywriter for beauty, grooming, and wellness businesses.
+You are an expert social media strategist and direct-response copywriter for local businesses, service businesses, creators, and small brands.
 
 Business type:
 ${businessType}
 
-Content topic / promotion:
+Content topic / promotion / campaign:
 ${topic}
 
 Platform:
@@ -107,7 +107,7 @@ ${tone}
 Language:
 ${language}
 
-Generate exactly ${safePostCount} social media posts.
+Generate exactly ${safePostCount} social media posts for this specific business type.
 
 Strict rules:
 - Write ONLY in ${language}.
@@ -115,13 +115,15 @@ Strict rules:
 - Optimize the content for ${platform}.
 - Match the tone: ${tone}.
 - Match the goal: ${goal}.
+- Use industry-specific language that fits ${businessType}.
 - If the language is Romanian, use natural Romanian from Romania.
-- Do not mention unrelated services.
+- Do not mention unrelated services or industries.
 - Avoid repetitive phrases.
-- Avoid fake marketing language.
+- Avoid generic AI-sounding marketing language.
 - Avoid excessive emojis.
 - Make every post meaningfully different.
-- Include a strong CTA for each post.
+- Include a clear CTA for each post.
+- Make the copy useful for a real business owner who wants more customers, bookings, calls, orders, leads, or visits.
 - Return ONLY valid JSON.
 - Do not include markdown.
 - Do not include explanations.

@@ -15,24 +15,26 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Beauty AI",
-    template: "%s | Beauty AI",
+    default: "BusinessContent AI",
+    template: "%s | BusinessContent AI",
   },
 
   description:
-    "AI content generator for salons, barbershops, nail studios, spas and beauty businesses. Generate captions, hashtags, CTAs and AI marketing images in seconds.",
+    "AI content generator for local businesses, creators, service providers and small brands. Generate social media posts, captions, hashtags, CTAs and AI marketing images in seconds.",
 
   keywords: [
     "AI content generator",
-    "beauty salon marketing",
-    "Instagram caption generator",
     "AI social media posts",
-    "beauty AI",
-    "barbershop marketing",
-    "nail salon marketing",
-    "AI beauty content",
+    "Instagram caption generator",
+    "local business marketing",
+    "small business marketing",
+    "AI marketing tool",
     "social media AI tool",
-    "AI marketing for salons",
+    "restaurant marketing",
+    "real estate content generator",
+    "gym marketing",
+    "business content generator",
+    "AI captions",
   ],
 
   metadataBase: new URL(
@@ -40,20 +42,20 @@ export const metadata: Metadata = {
   ),
 
   openGraph: {
-    title: "Beauty AI",
+    title: "BusinessContent AI",
     description:
-      "Generate beauty marketing content and AI social media images in seconds.",
+      "Generate social media content and AI marketing images for local businesses in seconds.",
     url: "https://beauty-ai-assistant-kappa.vercel.app",
-    siteName: "Beauty AI",
+    siteName: "BusinessContent AI",
     locale: "en_US",
     type: "website",
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "Beauty AI",
+    title: "BusinessContent AI",
     description:
-      "AI marketing assistant for salons, barbershops and beauty businesses.",
+      "AI marketing assistant for local businesses, creators and small brands.",
   },
 
   robots: {

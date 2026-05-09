@@ -21,6 +21,39 @@ type GeneratorFormProps = {
   onGenerateImage: () => void;
 };
 
+const businessTypes = [
+  "Restaurant",
+  "Cafe",
+  "Bakery",
+  "Barbershop",
+  "Beauty Salon",
+  "Nail Salon",
+  "Lash Studio",
+  "Hair Salon",
+  "Spa",
+  "Massage Studio",
+  "Med Spa",
+  "Gym",
+  "Fitness Coach",
+  "Yoga Studio",
+  "Dental Clinic",
+  "Medical Clinic",
+  "Real Estate Agent",
+  "Hotel",
+  "Auto Detailing",
+  "Car Wash",
+  "Cleaning Service",
+  "Tattoo Studio",
+  "Pet Grooming",
+  "Law Firm",
+  "Accounting Firm",
+  "Local Shop",
+  "Online Store",
+  "Event Planner",
+  "Photographer",
+  "Personal Brand",
+];
+
 export default function GeneratorForm({
   businessType,
   setBusinessType,
@@ -58,15 +91,9 @@ export default function GeneratorForm({
             onChange={(e) => setBusinessType(e.target.value)}
             className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
           >
-            <option>Barbershop</option>
-            <option>Nail Salon</option>
-            <option>Lash Studio</option>
-            <option>Hair Salon</option>
-            <option>Beauty Salon</option>
-            <option>Spa</option>
-            <option>Massage Studio</option>
-            <option>Makeup Artist</option>
-            <option>Med Spa</option>
+            {businessTypes.map((type) => (
+              <option key={type}>{type}</option>
+            ))}
           </select>
         </div>
 
@@ -123,6 +150,10 @@ export default function GeneratorForm({
             <option>Funny</option>
             <option>Elegant</option>
             <option>Warm</option>
+            <option>Trustworthy</option>
+            <option>Premium</option>
+            <option>Casual</option>
+            <option>Local</option>
           </select>
         </div>
 
@@ -141,6 +172,11 @@ export default function GeneratorForm({
             <option>Increase engagement</option>
             <option>Sell gift cards</option>
             <option>Win back old clients</option>
+            <option>Get more calls</option>
+            <option>Drive website visits</option>
+            <option>Promote new product</option>
+            <option>Build local trust</option>
+            <option>Generate leads</option>
           </select>
         </div>
 
@@ -166,7 +202,7 @@ export default function GeneratorForm({
 
           {!isPro && (
             <p className="mt-2 text-xs text-zinc-500">
-              Upgrade to Pro for 5 and 10 post generations.
+              Upgrade to Normal or Pro for 5 and 10 post generations.
             </p>
           )}
         </div>
@@ -179,7 +215,7 @@ export default function GeneratorForm({
           <textarea
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
-            placeholder="Example: Summer nails promotion, new haircut service..."
+            placeholder="Example: weekend offer, new service, lunch special, client testimonial, seasonal campaign..."
             className="min-h-[130px] w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none"
           />
         </div>
@@ -206,7 +242,7 @@ export default function GeneratorForm({
 
         {creditsLeft === 0 && !isPro && (
           <p className="text-sm text-zinc-400">
-            You used all free credits. Upgrade to Pro for unlimited generations.
+            You used all free credits. Upgrade to continue generating content.
           </p>
         )}
       </div>
