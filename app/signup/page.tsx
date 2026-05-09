@@ -11,16 +11,50 @@ export default function SignupPage() {
   const [emailSent, setEmailSent] = useState(false);
 
   async function signup() {
+    if (!email.trim() || !password.trim()) {
+      alert("Please enter your email and password.");
+      return;
+    }
+
+    if (password.length < 6) {
+      alert("Password must be at least 6 characters.");
+      return;
+    }
+
     try {
       setLoading(true);
 
+      const normalizedEmail = email.trim().toLowerCase();
+
+      const checkResponse = await fetch("/api/check-user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: normalizedEmail,
+        }),
+      });
+
+      const checkData = await checkResponse.json();
+
+      if (!checkResponse.ok) {
+        alert(checkData.error || "Could not check account.");
+        return;
+      }
+
+      if (checkData.exists) {
+        alert("An account already exists with this email. Please log in.");
+        window.location.href = "/login";
+        return;
+      }
+
       const { error } = await supabase.auth.signUp({
-        email,
+        email: normalizedEmail,
         password,
 
         options: {
-          emailRedirectTo:
-            "https://beauty-ai-assistant-kappa.vercel.app/dashboard",
+          emailRedirectTo: `${window.location.origin}/dashboard`,
         },
       });
 
@@ -29,6 +63,7 @@ export default function SignupPage() {
         return;
       }
 
+      setEmail(normalizedEmail);
       setEmailSent(true);
     } catch (error) {
       console.error(error);
@@ -46,17 +81,13 @@ export default function SignupPage() {
             ✉️
           </div>
 
-          <h1 className="text-3xl font-bold">
-            Check your email
-          </h1>
+          <h1 className="text-3xl font-bold">Check your email</h1>
 
           <p className="mt-4 leading-7 text-zinc-400">
             We sent a confirmation link to:
           </p>
 
-          <p className="mt-2 font-semibold text-pink-300">
-            {email}
-          </p>
+          <p className="mt-2 font-semibold text-pink-300">{email}</p>
 
           <p className="mt-6 leading-7 text-zinc-500">
             Open the email and confirm your account to access your dashboard.
@@ -86,12 +117,10 @@ export default function SignupPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-zinc-950 px-6 text-white">
       <div className="w-full max-w-md rounded-3xl border border-zinc-800 bg-zinc-900 p-8">
-        <h1 className="text-3xl font-bold">
-          Create account
-        </h1>
+        <h1 className="text-3xl font-bold">Create account</h1>
 
         <p className="mt-3 text-zinc-400">
-          Start generating beauty marketing content with AI.
+          Start generating business marketing content with AI.
         </p>
 
         <div className="mt-8 space-y-4">
@@ -120,10 +149,7 @@ export default function SignupPage() {
           </button>
         </div>
 
-        <a
-          href="/login"
-          className="mt-6 block text-sm text-pink-300"
-        >
+        <a href="/login" className="mt-6 block text-sm text-pink-300">
           Already have an account? Login
         </a>
       </div>
