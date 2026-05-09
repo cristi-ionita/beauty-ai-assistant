@@ -6,37 +6,31 @@ export async function POST(req: Request) {
     const { email } = await req.json();
 
     if (!email) {
-      return NextResponse.json(
-        { error: "Missing email" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Missing email" }, { status: 400 });
     }
 
-    const normalizedEmail = String(email)
-      .trim()
-      .toLowerCase();
+    const normalizedEmail = String(email).trim().toLowerCase();
 
-    const { data, error } = await supabaseAdmin
-      .schema("auth")
-      .from("users")
-      .select("id,email")
-      .eq("email", normalizedEmail)
-      .maybeSingle();
+    const { data, error } = await supabaseAdmin.auth.admin.listUsers({
+      page: 1,
+      perPage: 1000,
+    });
 
     if (error) {
-      console.error(error);
-
+      console.error("Email check failed:", error);
       return NextResponse.json(
         { error: "Could not check email" },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({
-      exists: Boolean(data),
-    });
+    const exists = data.users.some(
+      (user) => user.email?.toLowerCase() === normalizedEmail
+    );
+
+    return NextResponse.json({ exists });
   } catch (error) {
-    console.error(error);
+    console.error("Check user error:", error);
 
     return NextResponse.json(
       { error: "Could not check email" },
