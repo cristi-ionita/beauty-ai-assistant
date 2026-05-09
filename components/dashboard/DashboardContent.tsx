@@ -1,12 +1,12 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { GeneratedPost } from "@/types/dashboard";
 
+import DashboardNav from "@/components/dashboard/DashboardNav";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import GeneratorForm from "@/components/dashboard/GeneratorForm";
 import ResultsPanel from "@/components/dashboard/ResultsPanel";
 import UpgradeModal from "@/components/dashboard/UpgradeModal";
 import LockedFeatures from "@/components/dashboard/LockedFeatures";
-import ImageHistory from "@/components/dashboard/ImageHistory";
 
 type DashboardContentProps = {
   businessType: string;
@@ -92,8 +92,6 @@ export default function DashboardContent({
   showUpgradeModal,
   setShowUpgradeModal,
 
-  imageHistoryVersion,
-
   isPaid,
 
   generatePosts,
@@ -113,7 +111,9 @@ export default function DashboardContent({
 
   return (
     <main className="min-h-screen bg-zinc-950 text-white">
-      <div className="mx-auto max-w-6xl px-6 py-16">
+      <DashboardNav onLogout={logout} />
+
+      <div className="mx-auto max-w-6xl px-6 py-10">
         <DashboardHeader
           plan={plan}
           creditsLeft={creditsLeft}
@@ -152,14 +152,7 @@ export default function DashboardContent({
             <LockedFeatures isPaid={isPaid} />
           </div>
 
-          <div className="space-y-8">
-            <ResultsPanel
-              posts={posts}
-              generatedImage={generatedImage}
-            />
-
-            <ImageHistory refreshKey={imageHistoryVersion} />
-          </div>
+          <ResultsPanel posts={posts} generatedImage={generatedImage} />
         </div>
 
         <UpgradeModal
