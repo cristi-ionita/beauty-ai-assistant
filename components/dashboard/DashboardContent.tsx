@@ -1,11 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
-import type { GeneratedPost } from "@/types/dashboard";
 
 import DashboardNav from "@/components/dashboard/DashboardNav";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
-import GeneratorForm from "@/components/dashboard/GeneratorForm";
-import ResultsPanel from "@/components/dashboard/ResultsPanel";
-import UpgradeModal from "@/components/dashboard/UpgradeModal";
 import LockedFeatures from "@/components/dashboard/LockedFeatures";
 
 type DashboardContentProps = {
@@ -29,9 +25,6 @@ type DashboardContentProps = {
 
   postCount: number;
   setPostCount: Dispatch<SetStateAction<number>>;
-
-  posts: GeneratedPost[];
-  generatedImage: string | null;
 
   loading: boolean;
   imageLoading: boolean;
@@ -57,45 +50,13 @@ type DashboardContentProps = {
 };
 
 export default function DashboardContent({
-  businessType,
-  setBusinessType,
-
-  topic,
-  setTopic,
-
-  language,
-  setLanguage,
-
-  platform,
-  setPlatform,
-
-  tone,
-  setTone,
-
-  goal,
-  setGoal,
-
-  postCount,
-  setPostCount,
-
-  posts,
-  generatedImage,
-
-  loading,
-  imageLoading,
   checkingAuth,
 
   creditsLeft,
   imageCreditsLeft,
   plan,
 
-  showUpgradeModal,
-  setShowUpgradeModal,
-
   isPaid,
-
-  generatePosts,
-  generateImage,
 
   upgradeToPlan,
   manageSubscription,
@@ -124,43 +85,75 @@ export default function DashboardContent({
           onLogout={logout}
         />
 
-        <div className="grid gap-8 lg:grid-cols-[420px_1fr]">
-          <div>
-            <GeneratorForm
-              businessType={businessType}
-              setBusinessType={setBusinessType}
-              language={language}
-              setLanguage={setLanguage}
-              platform={platform}
-              setPlatform={setPlatform}
-              tone={tone}
-              setTone={setTone}
-              goal={goal}
-              setGoal={setGoal}
-              postCount={postCount}
-              setPostCount={setPostCount}
-              topic={topic}
-              setTopic={setTopic}
-              isPro={isPaid}
-              creditsLeft={creditsLeft}
-              loading={loading}
-              imageLoading={imageLoading}
-              onGeneratePosts={generatePosts}
-              onGenerateImage={generateImage}
-            />
+        <div className="grid gap-6 md:grid-cols-3">
+          <a
+            href="/generate"
+            className="group rounded-3xl border border-zinc-800 bg-zinc-900 p-6 transition hover:border-pink-500/40 hover:bg-zinc-900/80"
+          >
+            <p className="text-sm uppercase tracking-[0.25em] text-pink-300">
+              Create
+            </p>
 
-            <LockedFeatures isPaid={isPaid} />
-          </div>
+            <h2 className="mt-3 text-2xl font-black">
+              Generate Content
+            </h2>
 
-          <ResultsPanel posts={posts} generatedImage={generatedImage} />
+            <p className="mt-3 leading-7 text-zinc-400">
+              Create posts, captions, CTAs and premium AI visuals for your
+              business.
+            </p>
+
+            <p className="mt-6 text-sm font-semibold text-pink-300">
+              Open Generator →
+            </p>
+          </a>
+
+          <a
+            href="/history"
+            className="group rounded-3xl border border-zinc-800 bg-zinc-900 p-6 transition hover:border-pink-500/40 hover:bg-zinc-900/80"
+          >
+            <p className="text-sm uppercase tracking-[0.25em] text-pink-300">
+              Library
+            </p>
+
+            <h2 className="mt-3 text-2xl font-black">
+              Content History
+            </h2>
+
+            <p className="mt-3 leading-7 text-zinc-400">
+              Browse, copy, download and reuse your generated posts and images.
+            </p>
+
+            <p className="mt-6 text-sm font-semibold text-pink-300">
+              View History →
+            </p>
+          </a>
+
+          <a
+            href="/dashboard/billing"
+            className="group rounded-3xl border border-zinc-800 bg-zinc-900 p-6 transition hover:border-pink-500/40 hover:bg-zinc-900/80"
+          >
+            <p className="text-sm uppercase tracking-[0.25em] text-pink-300">
+              Account
+            </p>
+
+            <h2 className="mt-3 text-2xl font-black">
+              Billing
+            </h2>
+
+            <p className="mt-3 leading-7 text-zinc-400">
+              Manage your subscription, billing portal and account plan.
+            </p>
+
+            <p className="mt-6 text-sm font-semibold text-pink-300">
+              Manage Billing →
+            </p>
+          </a>
         </div>
 
-        <UpgradeModal
-          open={showUpgradeModal}
-          onClose={() => setShowUpgradeModal(false)}
-          onUpgradeNormal={() => upgradeToPlan("normal")}
-          onUpgradePro={() => upgradeToPlan("pro")}
-        />
+        <div className="mt-8">
+          <LockedFeatures isPaid={isPaid} />
+        </div>
       </div>
     </main>
   );

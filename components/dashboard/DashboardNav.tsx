@@ -8,7 +8,10 @@ export default function DashboardNav({
   return (
     <nav className="sticky top-0 z-50 border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <a href="/dashboard" className="group relative inline-flex items-center gap-3">
+        <a
+          href="/dashboard"
+          className="group relative inline-flex items-center gap-3"
+        >
           <div className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-pink-500 via-fuchsia-500 to-purple-600 shadow-[0_0_35px_rgba(236,72,153,0.35)]">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.35),transparent_60%)]" />
 
@@ -30,7 +33,7 @@ export default function DashboardNav({
 
         <div className="flex items-center gap-2">
           <a
-            href="/dashboard"
+            href="/generate"
             className="rounded-xl px-4 py-2 text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
           >
             Generate
