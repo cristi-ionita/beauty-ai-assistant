@@ -20,35 +20,6 @@ export function useDashboardAuth({
   setCheckingAuth,
 }: DashboardAuthOptions) {
   useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "SIGNED_OUT" || !session) {
-        await supabase.auth.signOut();
-        window.location.href = "/";
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-
-    if (params.get("success") === "true") {
-      toast.success("Upgrade successful. Your plan is now active.");
-      window.history.replaceState({}, "", "/dashboard");
-    }
-
-    if (params.get("canceled") === "true") {
-      toast.error("Checkout canceled.");
-      window.history.replaceState({}, "", "/dashboard");
-    }
-  }, []);
-
-  useEffect(() => {
     async function checkUser() {
       try {
         const {
@@ -57,8 +28,8 @@ export function useDashboardAuth({
         } = await supabase.auth.getUser();
 
         if (error || !user) {
-          await supabase.auth.signOut();
-          window.location.href = "/";
+          setCheckingAuth(false);
+          window.location.href = "/login";
           return;
         }
 
@@ -122,8 +93,7 @@ export function useDashboardAuth({
     } = await supabase.auth.getUser();
 
     if (error || !user) {
-      await supabase.auth.signOut();
-      window.location.href = "/";
+      window.location.href = "/login";
       return null;
     }
 
