@@ -32,6 +32,21 @@ export default function DashboardPage() {
   const isPaid = plan === "normal" || plan === "pro";
 
   useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "SIGNED_OUT" || !session) {
+        await supabase.auth.signOut();
+        window.location.href = "/";
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
 
     if (params.get("success") === "true") {
@@ -49,21 +64,23 @@ export default function DashboardPage() {
     async function checkUser() {
       const {
         data: { user },
+        error,
       } = await supabase.auth.getUser();
 
-      if (!user) {
-        window.location.href = "/login";
+      if (error || !user) {
+        await supabase.auth.signOut();
+        window.location.href = "/";
         return;
       }
 
-      const { data: creditData, error } = await supabase
+      const { data: creditData, error: creditError } = await supabase
         .from("user_credits")
         .select("credits, image_credits, plan, stripe_customer_id")
         .eq("user_id", user.id)
         .single();
 
-      if (error) {
-        console.error("Failed to load user credits:", error);
+      if (creditError) {
+        console.error("Failed to load user credits:", creditError);
         toast.error("Could not load your account data");
       }
 
@@ -80,6 +97,21 @@ export default function DashboardPage() {
     checkUser();
   }, []);
 
+  async function getCurrentUserOrRedirect() {
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+
+    if (error || !user) {
+      await supabase.auth.signOut();
+      window.location.href = "/";
+      return null;
+    }
+
+    return user;
+  }
+
   async function generatePosts() {
     if (!topic.trim()) {
       toast.error("Please enter a topic or promotion first");
@@ -89,14 +121,9 @@ export default function DashboardPage() {
     try {
       setLoading(true);
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const user = await getCurrentUserOrRedirect();
 
-      if (!user) {
-        window.location.href = "/login";
-        return;
-      }
+      if (!user) return;
 
       const response = await fetch("/api/generate", {
         method: "POST",
@@ -129,6 +156,10 @@ export default function DashboardPage() {
         setCreditsLeft(data.creditsLeft);
       }
 
+      if (data.imageCreditsLeft !== undefined) {
+        setImageCreditsLeft(data.imageCreditsLeft);
+      }
+
       if (data.plan) {
         setPlan(data.plan);
       }
@@ -147,21 +178,18 @@ export default function DashboardPage() {
     }
 
     if (imageCreditsLeft !== null && imageCreditsLeft <= 0) {
-      toast.error("No image credits left. Upgrade your plan to generate more images.");
+      toast.error(
+        "No image credits left. Upgrade your plan to generate more images."
+      );
       return;
     }
 
     try {
       setImageLoading(true);
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const user = await getCurrentUserOrRedirect();
 
-      if (!user) {
-        window.location.href = "/login";
-        return;
-      }
+      if (!user) return;
 
       const response = await fetch("/api/generate-image", {
         method: "POST",
@@ -217,12 +245,10 @@ modern beauty industry aesthetic, premium lighting, clean composition, elegant c
 
   async function upgradeToPlan(planType: "normal" | "pro") {
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const user = await getCurrentUserOrRedirect();
 
       if (!user || !user.email) {
-        window.location.href = "/login";
+        window.location.href = "/";
         return;
       }
 
@@ -253,12 +279,10 @@ modern beauty industry aesthetic, premium lighting, clean composition, elegant c
 
   async function manageSubscription() {
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const user = await getCurrentUserOrRedirect();
 
       if (!user || !user.email) {
-        window.location.href = "/login";
+        window.location.href = "/";
         return;
       }
 
@@ -289,7 +313,7 @@ modern beauty industry aesthetic, premium lighting, clean composition, elegant c
 
   async function logout() {
     await supabase.auth.signOut();
-    window.location.href = "/login";
+    window.location.href = "/";
   }
 
   if (checkingAuth) {

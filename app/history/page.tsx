@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 
 type GeneratedPost = {
@@ -20,24 +21,42 @@ export default function HistoryPage() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "SIGNED_OUT" || !session) {
+        await supabase.auth.signOut();
+        window.location.href = "/";
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
     async function loadPosts() {
       const {
         data: { user },
+        error,
       } = await supabase.auth.getUser();
 
-      if (!user) {
-        window.location.href = "/login";
+      if (error || !user) {
+        await supabase.auth.signOut();
+        window.location.href = "/";
         return;
       }
 
-      const { data, error } = await supabase
+      const { data, error: postsError } = await supabase
         .from("generated_posts")
         .select("*")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
-      if (error) {
-        console.error(error);
+      if (postsError) {
+        console.error(postsError);
+        toast.error("Could not load your history");
         setLoading(false);
         return;
       }
@@ -69,12 +88,15 @@ export default function HistoryPage() {
     );
   }, [posts, search]);
 
-  function copyPost(post: GeneratedPost) {
+  async function copyPost(post: GeneratedPost) {
     const text = `${post.caption}\n\n${post.hashtags}\n\n${post.cta}`;
-    navigator.clipboard.writeText(text);
+
+    await navigator.clipboard.writeText(text);
+
+    toast.success("Post copied to clipboard");
   }
 
-  function copyAllFiltered() {
+  async function copyAllFiltered() {
     const text = filteredPosts
       .map(
         (post, index) =>
@@ -82,7 +104,9 @@ export default function HistoryPage() {
       )
       .join("\n\n-------------------\n\n");
 
-    navigator.clipboard.writeText(text);
+    await navigator.clipboard.writeText(text);
+
+    toast.success("Results copied to clipboard");
   }
 
   return (
@@ -164,6 +188,7 @@ export default function HistoryPage() {
               <div className="space-y-5">
                 <div>
                   <p className="mb-2 text-sm text-zinc-500">Caption</p>
+
                   <p className="whitespace-pre-wrap leading-8 text-zinc-300">
                     {post.caption}
                   </p>
@@ -171,11 +196,13 @@ export default function HistoryPage() {
 
                 <div>
                   <p className="mb-2 text-sm text-zinc-500">Hashtags</p>
+
                   <p className="text-pink-300">{post.hashtags}</p>
                 </div>
 
                 <div>
                   <p className="mb-2 text-sm text-zinc-500">CTA</p>
+
                   <p className="text-zinc-300">{post.cta}</p>
                 </div>
               </div>
