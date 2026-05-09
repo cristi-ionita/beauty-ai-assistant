@@ -15,7 +15,7 @@ export default function Navbar() {
           </a>
 
           <a
-            href="/dashboard"
+            href="/signup"
             className="rounded-full bg-pink-500 px-5 py-2 text-sm font-semibold hover:bg-pink-400"
           >
             Start Free

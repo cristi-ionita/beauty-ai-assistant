@@ -20,7 +20,7 @@ export default function Hero() {
 
         <div className="mt-10 flex flex-col gap-4 sm:flex-row">
           <a
-            href="/dashboard"
+            href="/signup"
             className="rounded-full bg-pink-500 px-8 py-4 font-semibold text-white transition hover:bg-pink-400"
           >
             Start Free

@@ -28,7 +28,7 @@ export default function Pricing() {
           </ul>
 
           <a
-            href="/dashboard"
+            href="/signup"
             className="mt-10 inline-flex rounded-full border border-zinc-700 px-6 py-3 font-semibold hover:bg-zinc-800"
           >
             Start Free
@@ -58,7 +58,7 @@ export default function Pricing() {
           </ul>
 
           <a
-            href="/dashboard"
+            href="/signup"
             className="mt-10 inline-flex rounded-full bg-pink-500 px-6 py-3 font-semibold text-white hover:bg-pink-400"
           >
             Upgrade Normal
@@ -84,7 +84,7 @@ export default function Pricing() {
           </ul>
 
           <a
-            href="/dashboard"
+            href="/signup"
             className="mt-10 inline-flex rounded-full border border-zinc-700 px-6 py-3 font-semibold hover:bg-zinc-800"
           >
             Upgrade Pro

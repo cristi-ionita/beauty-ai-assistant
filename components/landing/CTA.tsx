@@ -10,7 +10,7 @@ export default function CTA() {
       </p>
 
       <a
-        href="/dashboard"
+        href="/signup"
         className="mt-10 inline-flex rounded-full bg-pink-500 px-8 py-4 font-semibold text-white hover:bg-pink-400"
       >
         Start Generating
