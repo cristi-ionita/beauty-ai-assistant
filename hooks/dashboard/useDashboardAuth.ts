@@ -50,36 +50,60 @@ export function useDashboardAuth({
 
   useEffect(() => {
     async function checkUser() {
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser();
+      try {
+        const {
+          data: { user },
+          error,
+        } = await supabase.auth.getUser();
 
-      if (error || !user) {
-        await supabase.auth.signOut();
-        window.location.href = "/";
-        return;
+        if (error || !user) {
+          await supabase.auth.signOut();
+          window.location.href = "/";
+          return;
+        }
+
+        const { data: creditData, error: creditError } = await supabase
+          .from("user_credits")
+          .select("credits, image_credits, plan, stripe_customer_id")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (creditError) {
+          console.error("Failed to load user credits:", creditError);
+          toast.error("Could not load your account data");
+        }
+
+        if (creditData) {
+          setPlan(creditData.plan);
+          setCreditsLeft(creditData.credits);
+          setImageCreditsLeft(creditData.image_credits);
+          setStripeCustomerId(creditData.stripe_customer_id);
+        } else {
+          const { data: newCredits, error: insertError } = await supabase
+            .from("user_credits")
+            .insert({
+              user_id: user.id,
+              credits: 10,
+              image_credits: 1,
+              plan: "free",
+            })
+            .select("credits, image_credits, plan, stripe_customer_id")
+            .single();
+
+          if (insertError || !newCredits) {
+            console.error("Failed to create user credits:", insertError);
+            toast.error("Could not create your free account credits");
+            return;
+          }
+
+          setPlan(newCredits.plan);
+          setCreditsLeft(newCredits.credits);
+          setImageCreditsLeft(newCredits.image_credits);
+          setStripeCustomerId(newCredits.stripe_customer_id);
+        }
+      } finally {
+        setCheckingAuth(false);
       }
-
-      const { data: creditData, error: creditError } = await supabase
-        .from("user_credits")
-        .select("credits, image_credits, plan, stripe_customer_id")
-        .eq("user_id", user.id)
-        .single();
-
-      if (creditError) {
-        console.error("Failed to load user credits:", creditError);
-        toast.error("Could not load your account data");
-      }
-
-      if (creditData) {
-        setPlan(creditData.plan);
-        setCreditsLeft(creditData.credits);
-        setImageCreditsLeft(creditData.image_credits);
-        setStripeCustomerId(creditData.stripe_customer_id);
-      }
-
-      setCheckingAuth(false);
     }
 
     checkUser();
