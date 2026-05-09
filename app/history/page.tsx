@@ -157,9 +157,6 @@ export default function HistoryPage() {
       <div className="mx-auto max-w-6xl px-6 py-10">
         <div className="mb-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <a href="/dashboard" className="text-sm text-pink-300">
-              ← Back to generator
-            </a>
 
             <h1 className="mt-4 text-4xl font-bold">Your History</h1>
 

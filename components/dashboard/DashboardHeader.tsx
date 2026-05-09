@@ -31,10 +31,6 @@ export default function DashboardHeader({
         <div className="relative">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
             <div>
-              <div className="mb-4 inline-flex rounded-full border border-pink-500/20 bg-pink-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-pink-300">
-                BusinessContent AI
-              </div>
-
               <h1 className="max-w-3xl text-4xl font-black tracking-tight md:text-5xl">
                 Content Generator
               </h1>
@@ -96,7 +92,7 @@ export default function DashboardHeader({
                   </div>
 
                   <p className="mt-6 text-sm font-bold">
-                    Upgrade Normal →
+                    Upgrade Normal
                   </p>
                 </div>
               </button>
@@ -137,7 +133,7 @@ export default function DashboardHeader({
                   </div>
 
                   <p className="mt-6 text-sm font-bold">
-                    Upgrade Pro →
+                    Upgrade Pro
                   </p>
                 </div>
               </button>

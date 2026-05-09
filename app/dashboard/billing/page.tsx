@@ -77,9 +77,6 @@ export default function BillingPage() {
   return (
     <main className="min-h-screen bg-zinc-950 px-6 py-16 text-white">
       <div className="mx-auto max-w-4xl">
-        <a href="/dashboard" className="text-sm text-pink-300">
-          ← Back to dashboard
-        </a>
 
         <h1 className="mt-8 text-5xl font-bold">Billing</h1>
 
