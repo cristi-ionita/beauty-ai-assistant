@@ -153,6 +153,11 @@ export function useDashboardActions({
         },
         body: JSON.stringify({
           userId: user.id,
+          businessType,
+          topic,
+          platform,
+          tone,
+          goal,
 
           prompt: `
 You are a world-class advertising creative director.

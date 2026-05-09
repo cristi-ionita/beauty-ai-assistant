@@ -11,7 +11,15 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const { prompt, userId } = body;
+    const {
+      prompt,
+      userId,
+      businessType,
+      topic,
+      platform,
+      tone,
+      goal,
+    } = body;
 
     if (!prompt || !userId) {
       return NextResponse.json(
@@ -68,7 +76,24 @@ export async function POST(req: Request) {
       );
     }
 
+    const imageData = `data:image/png;base64,${image.b64_json}`;
     const newCredits = userCredits.image_credits - 1;
+
+    const { error: imageInsertError } = await supabase
+      .from("generated_images")
+      .insert({
+        user_id: userId,
+        business_type: businessType || null,
+        topic: topic || null,
+        platform: platform || null,
+        tone: tone || null,
+        goal: goal || null,
+        image_data: imageData,
+      });
+
+    if (imageInsertError) {
+      console.error("Failed to save generated image:", imageInsertError);
+    }
 
     const { error: updateError } = await supabase
       .from("user_credits")
@@ -82,7 +107,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({
-      image: `data:image/png;base64,${image.b64_json}`,
+      image: imageData,
       imageCreditsLeft: newCredits,
     });
   } catch (error) {
