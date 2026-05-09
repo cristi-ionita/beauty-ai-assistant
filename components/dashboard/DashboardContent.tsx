@@ -75,80 +75,67 @@ export default function DashboardContent({
       <DashboardNav onLogout={logout} />
 
       <div className="mx-auto max-w-6xl px-6 py-10">
-        <DashboardHeader
-          plan={plan}
-          creditsLeft={creditsLeft}
-          imageCreditsLeft={imageCreditsLeft}
-          onUpgradeNormal={() => upgradeToPlan("normal")}
-          onUpgradePro={() => upgradeToPlan("pro")}
-          onManageSubscription={manageSubscription}
-          onLogout={logout}
-        />
+        <div className="relative overflow-hidden rounded-[2rem] border border-zinc-800 bg-zinc-900 p-8 shadow-2xl">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(236,72,153,0.18),transparent_35%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(147,51,234,0.12),transparent_35%)]" />
 
-        <div className="grid gap-6 md:grid-cols-3">
-          <a
-            href="/generate"
-            className="group rounded-3xl border border-zinc-800 bg-zinc-900 p-6 transition hover:border-pink-500/40 hover:bg-zinc-900/80"
-          >
-            <p className="text-sm uppercase tracking-[0.25em] text-pink-300">
-              Create
-            </p>
+          <div className="relative">
+            <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <div className="mb-4 inline-flex rounded-full border border-pink-500/20 bg-pink-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-pink-300">
+                  AI Marketing Platform
+                </div>
 
-            <h2 className="mt-3 text-2xl font-black">
-              Generate Content
-            </h2>
+                <h1 className="max-w-3xl text-4xl font-black tracking-tight md:text-5xl">
+                  Content Generator
+                </h1>
 
-            <p className="mt-3 leading-7 text-zinc-400">
-              Create posts, captions, CTAs and premium AI visuals for your
-              business.
-            </p>
+                <p className="mt-4 max-w-2xl text-lg leading-8 text-zinc-400">
+                  Generate premium social media posts, captions, campaigns and
+                  cinematic AI visuals for local businesses and modern brands.
+                </p>
 
-            <p className="mt-6 text-sm font-semibold text-pink-300">
-              Open Generator →
-            </p>
-          </a>
+                <div className="mt-8">
+                  <a
+                    href="/generate"
+                    className="inline-flex items-center rounded-2xl bg-gradient-to-r from-pink-500 via-fuchsia-500 to-purple-600 px-7 py-4 text-sm font-bold text-white shadow-[0_0_35px_rgba(236,72,153,0.35)] transition hover:scale-[1.02]"
+                  >
+                    Generate Now →
+                  </a>
+                </div>
+              </div>
 
-          <a
-            href="/history"
-            className="group rounded-3xl border border-zinc-800 bg-zinc-900 p-6 transition hover:border-pink-500/40 hover:bg-zinc-900/80"
-          >
-            <p className="text-sm uppercase tracking-[0.25em] text-pink-300">
-              Library
-            </p>
+              <div className="grid min-w-[280px] gap-3 sm:grid-cols-3 lg:grid-cols-1">
+                <MetricCard
+                  label="Current Plan"
+                  value={plan || "free"}
+                  highlight
+                />
 
-            <h2 className="mt-3 text-2xl font-black">
-              Content History
-            </h2>
+                <MetricCard
+                  label="Text Credits"
+                  value={isPaid ? "Unlimited" : creditsLeft ?? "..."}
+                />
 
-            <p className="mt-3 leading-7 text-zinc-400">
-              Browse, copy, download and reuse your generated posts and images.
-            </p>
+                <MetricCard
+                  label="Image Credits"
+                  value={isPaid ? "Unlimited" : imageCreditsLeft ?? "..."}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
 
-            <p className="mt-6 text-sm font-semibold text-pink-300">
-              View History →
-            </p>
-          </a>
-
-          <a
-            href="/dashboard/billing"
-            className="group rounded-3xl border border-zinc-800 bg-zinc-900 p-6 transition hover:border-pink-500/40 hover:bg-zinc-900/80"
-          >
-            <p className="text-sm uppercase tracking-[0.25em] text-pink-300">
-              Account
-            </p>
-
-            <h2 className="mt-3 text-2xl font-black">
-              Billing
-            </h2>
-
-            <p className="mt-3 leading-7 text-zinc-400">
-              Manage your subscription, billing portal and account plan.
-            </p>
-
-            <p className="mt-6 text-sm font-semibold text-pink-300">
-              Manage Billing →
-            </p>
-          </a>
+        <div className="mt-8">
+          <DashboardHeader
+            plan={plan}
+            creditsLeft={creditsLeft}
+            imageCreditsLeft={imageCreditsLeft}
+            onUpgradeNormal={() => upgradeToPlan("normal")}
+            onUpgradePro={() => upgradeToPlan("pro")}
+            onManageSubscription={manageSubscription}
+            onLogout={logout}
+          />
         </div>
 
         <div className="mt-8">
@@ -156,5 +143,29 @@ export default function DashboardContent({
         </div>
       </div>
     </main>
+  );
+}
+
+function MetricCard({
+  label,
+  value,
+  highlight = false,
+}: {
+  label: string;
+  value: string | number;
+  highlight?: boolean;
+}) {
+  return (
+    <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 px-5 py-4">
+      <p className="text-xs text-zinc-500">{label}</p>
+
+      <p
+        className={`mt-1 font-bold capitalize ${
+          highlight ? "text-pink-300" : "text-white"
+        }`}
+      >
+        {value}
+      </p>
+    </div>
   );
 }
