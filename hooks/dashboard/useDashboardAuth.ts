@@ -12,13 +12,6 @@ type DashboardAuthOptions = {
   setCheckingAuth: (value: boolean) => void;
 };
 
-type UserCreditsRow = {
-  credits: number;
-  image_credits: number;
-  plan: string | null;
-  stripe_customer_id: string | null;
-};
-
 const DEFAULT_FREE_CREDITS = 10;
 const DEFAULT_FREE_IMAGE_CREDITS = 1;
 
@@ -30,36 +23,30 @@ export function useDashboardAuth({
   setCheckingAuth,
 }: DashboardAuthOptions) {
   useEffect(() => {
-    let isMounted = true;
-
-    function applyCredits(data: UserCreditsRow) {
-      if (!isMounted) return;
-
-      setPlan(data.plan || "free");
-      setCreditsLeft(data.credits);
-      setImageCreditsLeft(data.image_credits);
-      setStripeCustomerId(data.stripe_customer_id);
-    }
+    let mounted = true;
 
     async function loadUserCredits(userId: string) {
-      const { data: creditData, error: creditError } = await supabase
+      const { data, error } = await supabase
         .from("user_credits")
         .select("credits, image_credits, plan, stripe_customer_id")
         .eq("user_id", userId)
         .maybeSingle();
 
-      if (creditError) {
-        console.error("Failed to load user credits:", creditError);
+      if (error) {
+        console.error(error);
         toast.error("Could not load your account data.");
         return;
       }
 
-      if (creditData) {
-        applyCredits(creditData);
+      if (data) {
+        setPlan(data.plan || "free");
+        setCreditsLeft(data.credits);
+        setImageCreditsLeft(data.image_credits);
+        setStripeCustomerId(data.stripe_customer_id);
         return;
       }
 
-      const { data: newCredits, error: insertError } = await supabase
+      const { data: created, error: createError } = await supabase
         .from("user_credits")
         .insert({
           user_id: userId,
@@ -70,13 +57,16 @@ export function useDashboardAuth({
         .select("credits, image_credits, plan, stripe_customer_id")
         .single();
 
-      if (insertError || !newCredits) {
-        console.error("Failed to create user credits:", insertError);
-        toast.error("Could not create your free account credits.");
+      if (createError || !created) {
+        console.error(createError);
+        toast.error("Could not create your free credits.");
         return;
       }
 
-      applyCredits(newCredits);
+      setPlan(created.plan || "free");
+      setCreditsLeft(created.credits);
+      setImageCreditsLeft(created.image_credits);
+      setStripeCustomerId(created.stripe_customer_id);
     }
 
     async function checkUser() {
@@ -84,45 +74,30 @@ export function useDashboardAuth({
         setCheckingAuth(true);
 
         const {
-          data: { session },
-          error: sessionError,
-        } = await supabase.auth.getSession();
+          data: { user },
+          error,
+        } = await supabase.auth.getUser();
 
-        if (sessionError || !session?.user) {
+        if (error || !user) {
           window.location.replace("/login");
           return;
         }
 
-        await loadUserCredits(session.user.id);
+        await loadUserCredits(user.id);
       } catch (error) {
-        console.error("Dashboard auth check failed:", error);
-        toast.error("Authentication failed. Please log in again.");
+        console.error("Auth check failed:", error);
         window.location.replace("/login");
       } finally {
-        if (isMounted) {
+        if (mounted) {
           setCheckingAuth(false);
         }
       }
     }
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "SIGNED_OUT" || !session?.user) {
-        window.location.replace("/login");
-        return;
-      }
-
-      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
-        await loadUserCredits(session.user.id);
-      }
-    });
-
     checkUser();
 
     return () => {
-      isMounted = false;
-      subscription.unsubscribe();
+      mounted = false;
     };
   }, [
     setPlan,
@@ -134,16 +109,16 @@ export function useDashboardAuth({
 
   async function getCurrentUserOrRedirect() {
     const {
-      data: { session },
+      data: { user },
       error,
-    } = await supabase.auth.getSession();
+    } = await supabase.auth.getUser();
 
-    if (error || !session?.user) {
+    if (error || !user) {
       window.location.replace("/login");
       return null;
     }
 
-    return session.user;
+    return user;
   }
 
   return {
