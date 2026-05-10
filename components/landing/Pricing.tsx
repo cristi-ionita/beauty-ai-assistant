@@ -85,7 +85,7 @@ export default function Pricing() {
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(236,72,153,0.12),transparent_35%)] opacity-0 transition group-hover:opacity-100" />
 
               {plan.badge && (
-                <div className="absolute left-6 top-0 -translate-y-1/2 rounded-full bg-gradient-to-r from-pink-500 via-fuchsia-500 to-purple-600 px-4 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-lg">
+                <div className="mb-5 inline-flex rounded-full bg-gradient-to-r from-pink-500 via-fuchsia-500 to-purple-600 px-4 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-lg">
                   {plan.badge}
                 </div>
               )}
