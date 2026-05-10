@@ -24,6 +24,8 @@ const pricingPlans = [
       "Up to 10 posts per generation",
       "Premium tones and goals",
       "Multi-platform optimization",
+      "AI reel & video concepts — coming soon",
+      "Voiceover script generation",
       "Cancel anytime",
     ],
     button: "Upgrade Normal",
@@ -34,14 +36,16 @@ const pricingPlans = [
   {
     name: "Pro",
     price: "€49/mo",
-    description:
-      "For agencies, power users and multi-brand workflows.",
+    description: "For agencies, power users and multi-brand workflows.",
     features: [
       "Unlimited text generations",
       "150 AI images per month",
       "Up to 10 posts per generation",
       "Advanced campaign generation",
       "Priority creative workflow",
+      "AI video campaigns — coming soon",
+      "AI music ad concepts — coming soon",
+      "Advanced reel workflows",
       "Cancel anytime",
     ],
     button: "Upgrade Pro",
@@ -52,10 +56,7 @@ const pricingPlans = [
 
 export default function Pricing() {
   return (
-    <section
-      id="pricing"
-      className="px-4 py-20 sm:px-6 sm:py-24"
-    >
+    <section id="pricing" className="px-4 py-20 sm:px-6 sm:py-24">
       <div className="mx-auto max-w-7xl">
         <div className="mx-auto mb-12 max-w-3xl text-center sm:mb-16">
           <p className="text-xs font-bold uppercase tracking-[0.35em] text-pink-300">
@@ -92,9 +93,7 @@ export default function Pricing() {
               <div className="relative">
                 <p
                   className={`text-xs font-bold uppercase tracking-[0.3em] ${
-                    plan.highlighted
-                      ? "text-pink-300"
-                      : "text-zinc-500"
+                    plan.highlighted ? "text-pink-300" : "text-zinc-500"
                   }`}
                 >
                   {plan.name}
@@ -110,10 +109,7 @@ export default function Pricing() {
 
                 <div className="mt-8 space-y-4">
                   {plan.features.map((feature) => (
-                    <div
-                      key={feature}
-                      className="flex items-start gap-3"
-                    >
+                    <div key={feature} className="flex items-start gap-3">
                       <div
                         className={`mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-black ${
                           plan.highlighted
@@ -144,6 +140,40 @@ export default function Pricing() {
               </div>
             </article>
           ))}
+        </div>
+
+        <div className="mt-16 overflow-hidden rounded-[2rem] border border-purple-500/20 bg-gradient-to-r from-purple-500/10 via-fuchsia-500/10 to-pink-500/10 p-6 shadow-2xl sm:p-8">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.25em] text-purple-300">
+                Future Roadmap
+              </p>
+
+              <h3 className="mt-3 text-2xl font-black text-white sm:text-3xl">
+                AI video & music generation
+              </h3>
+
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-300 sm:text-base">
+                We are building next-generation creative tools including AI
+                reels, short-form video campaigns, ad music concepts, cinematic
+                visuals and premium voiceover workflows.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white">
+                🎥 AI Reels
+              </span>
+
+              <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white">
+                🎵 AI Music Ads
+              </span>
+
+              <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white">
+                🎙️ Voiceovers
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
