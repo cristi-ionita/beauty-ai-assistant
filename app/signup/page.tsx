@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 
@@ -107,17 +108,18 @@ export default function SignupPage() {
             <a
               href="https://mail.google.com"
               target="_blank"
+              rel="noreferrer"
               className="rounded-xl bg-pink-500 py-4 text-sm font-bold transition hover:bg-pink-400"
             >
               Open Gmail
             </a>
 
-            <a
+            <Link
               href="/login"
               className="rounded-xl border border-zinc-700 py-4 text-sm font-bold transition hover:bg-zinc-800"
             >
               Back to login
-            </a>
+            </Link>
           </div>
         </div>
       </main>
@@ -127,7 +129,7 @@ export default function SignupPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-zinc-950 px-4 py-8 text-white sm:px-6">
       <div className="w-full max-w-md rounded-3xl border border-zinc-800 bg-zinc-900 p-5 shadow-2xl sm:p-8">
-        <a href="/" className="mb-8 inline-flex items-center gap-3">
+        <Link href="/" className="mb-8 inline-flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-pink-500 via-fuchsia-500 to-purple-600 shadow-[0_0_30px_rgba(236,72,153,0.35)]">
             <span className="text-sm font-black text-white">B</span>
           </div>
@@ -141,7 +143,7 @@ export default function SignupPage() {
               AI SUITE
             </span>
           </div>
-        </a>
+        </Link>
 
         <h1 className="text-3xl font-black leading-tight sm:text-4xl">
           Create account
@@ -183,12 +185,12 @@ export default function SignupPage() {
           )}
         </div>
 
-        <a
+        <Link
           href="/login"
           className="mt-6 block text-sm text-pink-300 hover:text-pink-200"
         >
           Already have an account? Login
-        </a>
+        </Link>
       </div>
     </main>
   );

@@ -1,13 +1,15 @@
+import Link from "next/link";
+
 export default function PrivacyPage() {
   return (
     <main className="min-h-screen bg-zinc-950 text-white">
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-20">
-        <a
+        <Link
           href="/"
           className="inline-flex items-center text-sm font-semibold text-pink-300 transition hover:text-pink-200"
         >
           ← Back home
-        </a>
+        </Link>
 
         <div className="mt-8 sm:mt-10">
           <p className="text-xs uppercase tracking-[0.25em] text-pink-300 sm:text-sm">
@@ -65,9 +67,7 @@ export default function PrivacyPage() {
           <PolicySection title="7. Contact">
             For privacy questions, contact us at:
             <br />
-            <span className="text-pink-300">
-              support@beautyai.app
-            </span>
+            <span className="text-pink-300">support@beautyai.app</span>
           </PolicySection>
         </div>
       </div>

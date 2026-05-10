@@ -1,15 +1,45 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { rateLimit } from "@/lib/rate-limit";
+
+function isValidEmail(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 
 export async function POST(req: Request) {
   try {
     const { email } = await req.json();
 
-    if (!email) {
-      return NextResponse.json({ error: "Missing email" }, { status: 400 });
+    const normalizedEmail = String(email || "")
+      .trim()
+      .toLowerCase();
+
+    if (!normalizedEmail) {
+      return NextResponse.json(
+        { error: "Missing email" },
+        { status: 400 }
+      );
     }
 
-    const normalizedEmail = String(email).trim().toLowerCase();
+    if (!isValidEmail(normalizedEmail)) {
+      return NextResponse.json(
+        { error: "Invalid email address" },
+        { status: 400 }
+      );
+    }
+
+    const limit = rateLimit({
+      key: `check-user:${normalizedEmail}`,
+      limit: 10,
+      windowMs: 60 * 60 * 1000,
+    });
+
+    if (!limit.success) {
+      return NextResponse.json(
+        { error: "Too many attempts. Please try again later." },
+        { status: 429 }
+      );
+    }
 
     const { data, error } = await supabaseAdmin.auth.admin.listUsers({
       page: 1,
@@ -18,6 +48,7 @@ export async function POST(req: Request) {
 
     if (error) {
       console.error("Email check failed:", error);
+
       return NextResponse.json(
         { error: "Could not check email" },
         { status: 500 }

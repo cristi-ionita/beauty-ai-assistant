@@ -34,7 +34,10 @@ type DashboardActionsProps = {
     value: (current: number) => number
   ) => void;
 
-  getCurrentUserOrRedirect: () => Promise<any>;
+  getCurrentUserOrRedirect: () => Promise<{
+    id:string;
+    email?: string;
+  } | null>;
 };
 
 function buildPremiumImagePrompt({

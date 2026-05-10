@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 
@@ -43,7 +44,7 @@ export default function LoginPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-zinc-950 px-4 py-8 text-white sm:px-6">
       <div className="w-full max-w-md rounded-3xl border border-zinc-800 bg-zinc-900 p-5 shadow-2xl sm:p-8">
-        <a href="/" className="mb-8 inline-flex items-center gap-3">
+        <Link href="/" className="mb-8 inline-flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-pink-500 via-fuchsia-500 to-purple-600 shadow-[0_0_30px_rgba(236,72,153,0.35)]">
             <span className="text-sm font-black text-white">B</span>
           </div>
@@ -57,7 +58,7 @@ export default function LoginPage() {
               AI SUITE
             </span>
           </div>
-        </a>
+        </Link>
 
         <h1 className="text-3xl font-black leading-tight sm:text-4xl">
           Login
@@ -99,12 +100,12 @@ export default function LoginPage() {
           )}
         </div>
 
-        <a
+        <Link
           href="/signup"
           className="mt-6 block text-sm text-pink-300 hover:text-pink-200"
         >
           Don&apos;t have an account? Sign up
-        </a>
+        </Link>
       </div>
     </main>
   );

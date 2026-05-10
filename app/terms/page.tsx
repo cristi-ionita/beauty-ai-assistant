@@ -1,13 +1,15 @@
+import Link from "next/link";
+
 export default function TermsPage() {
   return (
     <main className="min-h-screen bg-zinc-950 text-white">
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-20">
-        <a
+        <Link
           href="/"
           className="inline-flex items-center text-sm font-semibold text-pink-300 transition hover:text-pink-200"
         >
           ← Back home
-        </a>
+        </Link>
 
         <div className="mt-8 sm:mt-10">
           <p className="text-xs uppercase tracking-[0.25em] text-pink-300 sm:text-sm">
@@ -30,14 +32,13 @@ export default function TermsPage() {
           </TermsSection>
 
           <TermsSection title="2. Service description">
-            BusinessContent AI provides AI-generated marketing content and
-            image generation tools for beauty, local service and wellness
-            businesses.
+            BusinessContent AI provides AI-generated marketing content and image
+            generation tools for beauty, local service and wellness businesses.
           </TermsSection>
 
           <TermsSection title="3. Accounts">
-            You are responsible for maintaining the security of your account
-            and any activity that occurs under your account.
+            You are responsible for maintaining the security of your account and
+            any activity that occurs under your account.
           </TermsSection>
 
           <TermsSection title="4. Subscription billing">
@@ -47,9 +48,9 @@ export default function TermsPage() {
           </TermsSection>
 
           <TermsSection title="5. AI-generated content">
-            AI-generated content may contain inaccuracies or outputs similar
-            to content generated for other users. You are responsible for
-            reviewing all generated content before publishing or using it.
+            AI-generated content may contain inaccuracies or outputs similar to
+            content generated for other users. You are responsible for reviewing
+            all generated content before publishing or using it.
           </TermsSection>
 
           <TermsSection title="6. Acceptable use">
@@ -58,22 +59,20 @@ export default function TermsPage() {
           </TermsSection>
 
           <TermsSection title="7. Limitation of liability">
-            BusinessContent AI is provided "as is" without warranties of any
-            kind. We are not liable for indirect, incidental, or consequential
-            damages resulting from the use of the platform.
+            BusinessContent AI is provided &quot;as is&quot; without warranties
+            of any kind. We are not liable for indirect, incidental, or
+            consequential damages resulting from the use of the platform.
           </TermsSection>
 
           <TermsSection title="8. Changes to the service">
-            We may modify, suspend, or discontinue parts of the service at
-            any time without prior notice.
+            We may modify, suspend, or discontinue parts of the service at any
+            time without prior notice.
           </TermsSection>
 
           <TermsSection title="9. Contact">
             For questions regarding these terms, contact:
             <br />
-            <span className="text-pink-300">
-              support@beautyai.app
-            </span>
+            <span className="text-pink-300">support@beautyai.app</span>
           </TermsSection>
         </div>
       </div>

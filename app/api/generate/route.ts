@@ -1,31 +1,71 @@
 import OpenAI from "openai";
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 import { rateLimit } from "@/lib/rate-limit";
 
+const openaiApiKey = process.env.OPENAI_API_KEY;
+
+if (!openaiApiKey) {
+  throw new Error("Missing OPENAI_API_KEY environment variable");
+}
+
 const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: openaiApiKey,
 });
+
+const DEFAULT_FREE_CREDITS = 10;
+const DEFAULT_FREE_IMAGE_CREDITS = 1;
+
+function cleanText(value: unknown, fallback = "") {
+  if (typeof value !== "string") return fallback;
+
+  return value.trim().slice(0, 2000);
+}
+
+function getSafePostCount(postCount: unknown, isPaid: boolean) {
+  const count = Number(postCount) || 3;
+
+  if (isPaid) {
+    return Math.min(Math.max(count, 1), 10);
+  }
+
+  return Math.min(Math.max(count, 1), 3);
+}
+
+function safeJsonParse(text: string) {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+}
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const {
-      businessType,
-      topic,
-      language = "English",
-      platform = "Instagram",
-      tone = "Friendly",
-      goal = "Get bookings",
-      postCount = 3,
-      userId,
-    } = body;
+    const businessType = cleanText(body.businessType);
+    const topic = cleanText(body.topic);
+    const language = cleanText(body.language, "English");
+    const platform = cleanText(body.platform, "Instagram");
+    const tone = cleanText(body.tone, "Friendly");
+    const goal = cleanText(body.goal, "Get bookings");
+    const userId = cleanText(body.userId);
 
     if (!businessType || !topic || !userId) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
+      );
+    }
+
+    const { data: authUser, error: userError } =
+      await supabaseAdmin.auth.admin.getUserById(userId);
+
+    if (userError || !authUser?.user) {
+      return NextResponse.json(
+        { error: "Invalid user" },
+        { status: 401 }
       );
     }
 
@@ -37,28 +77,44 @@ export async function POST(req: Request) {
 
     if (!limit.success) {
       return NextResponse.json(
-        { error: "Too many generation requests. Please try again later." },
+        {
+          error:
+            "Too many generation requests. Please try again later.",
+        },
         { status: 429 }
       );
     }
 
-    let { data: creditData } = await supabase
-      .from("user_credits")
-      .select("*")
-      .eq("user_id", userId)
-      .single();
+    const { data: loadedCreditData, error: creditsError } =
+      await supabaseAdmin
+        .from("user_credits")
+        .select("*")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+    if (creditsError) {
+      console.error("Failed to load credits:", creditsError);
+
+      return NextResponse.json(
+        { error: "Failed to load user credits" },
+        { status: 500 }
+      );
+    }
+
+    let creditData = loadedCreditData;
 
     if (!creditData) {
-      const { data: newCredits, error: insertError } = await supabase
-        .from("user_credits")
-        .insert({
-          user_id: userId,
-          credits: 10,
-          image_credits: 1,
-          plan: "free",
-        })
-        .select()
-        .single();
+      const { data: newCredits, error: insertError } =
+        await supabaseAdmin
+          .from("user_credits")
+          .insert({
+            user_id: userId,
+            credits: DEFAULT_FREE_CREDITS,
+            image_credits: DEFAULT_FREE_IMAGE_CREDITS,
+            plan: "free",
+          })
+          .select()
+          .single();
 
       if (insertError || !newCredits) {
         console.error("Failed to create free credits:", insertError);
@@ -82,9 +138,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const safePostCount = isPaid
-      ? Math.min(Number(postCount) || 3, 10)
-      : Math.min(Number(postCount) || 3, 3);
+    const safePostCount = getSafePostCount(body.postCount, isPaid);
 
     const prompt = `
 You are an expert social media strategist and direct-response copywriter for local businesses, service businesses, creators, and small brands.
@@ -144,18 +198,9 @@ JSON format:
       messages: [{ role: "user", content: prompt }],
     });
 
-    const text = response.choices[0].message.content || "[]";
+    const text = response.choices[0]?.message?.content || "[]";
 
-    let posts;
-
-    try {
-      posts = JSON.parse(text);
-    } catch {
-      return NextResponse.json(
-        { error: "AI returned invalid format. Please try again." },
-        { status: 500 }
-      );
-    }
+    const posts = safeJsonParse(text);
 
     if (!Array.isArray(posts)) {
       return NextResponse.json(
@@ -172,6 +217,12 @@ JSON format:
           typeof post.hashtags === "string" &&
           typeof post.cta === "string"
       )
+      .map((post) => ({
+        caption: post.caption.trim(),
+        hashtags: post.hashtags.trim(),
+        cta: post.cta.trim(),
+      }))
+      .filter((post) => post.caption && post.hashtags && post.cta)
       .slice(0, safePostCount);
 
     if (validPosts.length === 0) {
@@ -181,7 +232,7 @@ JSON format:
       );
     }
 
-    const rows = validPosts.map((post: any) => ({
+    const rows = validPosts.map((post) => ({
       user_id: userId,
       business_type: businessType,
       language,
@@ -191,19 +242,29 @@ JSON format:
       cta: post.cta,
     }));
 
-    await supabase.from("generated_posts").insert(rows);
+    const { error: insertPostsError } = await supabaseAdmin
+      .from("generated_posts")
+      .insert(rows);
+
+    if (insertPostsError) {
+      console.error("Failed to save generated posts:", insertPostsError);
+    }
 
     let creditsLeft = creditData.credits;
 
     if (!isPaid) {
-      creditsLeft = creditData.credits - 1;
+      creditsLeft = Math.max(creditData.credits - 1, 0);
 
-      await supabase
+      const { error: updateCreditsError } = await supabaseAdmin
         .from("user_credits")
         .update({
           credits: creditsLeft,
         })
         .eq("user_id", userId);
+
+      if (updateCreditsError) {
+        console.error("Failed to update credits:", updateCreditsError);
+      }
     }
 
     return NextResponse.json({
@@ -214,7 +275,7 @@ JSON format:
       maxPostsAllowed: isPaid ? 10 : 3,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Text generation failed:", error);
 
     return NextResponse.json(
       { error: "Something went wrong" },
